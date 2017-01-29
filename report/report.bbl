@@ -1,0 +1,65 @@
+% $ biblatex auxiliary file $
+% $ biblatex version 2.5 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\entry{zuur_mixed_2008}{book}{}
+  \name{author}{5}{}{%
+    {{}%
+     {Zuur}{Z.}%
+     {Alain~F.}{A.~F.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Ieno}{I.}%
+     {Elena~N.}{E.~N.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Walker}{W.}%
+     {Neil~J.}{N.~J.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Saveliev}{S.}%
+     {Anatoly~A.}{A.~A.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Smith}{S.}%
+     {Graham~M.}{G.~M.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Springer}}%
+  }
+  \strng{namehash}{ZAF+1}
+  \strng{fullhash}{ZAFIENWNJSAASGM1}
+  \field{labelyear}{2008}
+  \field{sortinit}{Z}
+  \field{edition}{1}
+  \field{title}{Mixed Effects Models and Extensions in Ecology with {{R}}}
+  \list{location}{1}{%
+    {{New York}}%
+  }
+  \field{year}{2008}
+\endentry
+
+\lossort
+\endlossort
+
+\endinput

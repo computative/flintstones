@@ -1,0 +1,4 @@
+from numpy import *
+
+A = loadtxt("output.txt")
+print A
