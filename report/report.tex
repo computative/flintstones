@@ -3,8 +3,8 @@
 \input{/home/marius/Dokumenter/preamples/phys_en.pre}
 \author{\normalsize Marius Jonsson (Institutt for Vanskelig Fysikk, Oscars gate 19, 0352 OSLO, Norway) \\\\
 \vspace{5px}
-\normalsize \texttt{http://github.com/kingoslo/batmobile}}
-\title{\bf \uppercase{A study of the implementation of qualitatively accurate economical models using stochastic processes}}
+\normalsize \texttt{http://github.com/kingoslo/flintstones}}
+\title{\bf \uppercase{Some title}}
 \date{\normalsize \today}
 \addbibresource{/home/marius/Dokumenter/MyLibrary.bib}
 \DeclareUnicodeCharacter{2212}{$-$}
@@ -26,13 +26,70 @@ Suppose $\floor{\cdot}$ denotes the floor function on $\mathbb{R}$, then we know
 H_n(x) = n! \sum_{m=0}^{\floor{n/2}} \frac{(-1)^m}{m!(n-2m)!}(2x)^{n-2m}.
 \]
 \texttt{(nx,ny,spin,energy)}:
-%\lstinputlisting{../resources/output.txt}
+\lstinputlisting{../resources/output.txt}
+Suppose the principal quantum numbers of two-electron state indexed by $t$ are $n_t,m_t$, $V(r) = -e^2/(4\pi^2\varepsilon_0 r)$ denote the Coloumb potential, $p,q,r,s \in \{1,2,\cdots\}$ and let $A=\{ p,q,r,s \}$, $B = \{(1,p),(2,q),(1,r),(2,s)\}$ then a parameterization of the matrix element $\langle pq | V  |  rs \rangle$ is
+\begin{align*}
+\langle pq | V  |  rs \rangle &= \iiiint_{\mathbb{R}^4} \psi^*_p(\vec{r}_1)\psi^*_q(\vec{r}_2)V(\| \vec{r}_1-\vec{r}_2 \|)\psi^*_r(\vec{r}_1)\psi^*_s(\vec{r}_2)\,\diff \vec{r}_1 \, \diff \vec{r}_2\\
+&= - C \int_{-\infty}^\infty\int_{-\infty}^\infty\int_{-\infty}^\infty\int_{-\infty}^\infty \prod_{(k,t)\in B} H_{n_t}(u_k) H_{m_t}(v_k)\frac{\exp\Big(\sum_{i=1}^2 u_i^2 + v_i^2 \Big)\diff u_1 \diff v_1 \diff u_2 \diff v_2}{([u_1 - u_2]^2 + [v_1 - v_2]^2)^{1/2}}, \\
+&\text{for normalization factor} \quad C = \frac{\omega^{1/2} e^2}{4 \pi^3 \varepsilon_0}\Big( 2^{\sum_{i \in A} n_i + m_i}\prod_{j \in A}n_j!m_j! \Big)^{  -1/2}.
+\end{align*}
+\[
+n(\alpha) = \frac{1}{2} \left[ \left(\frac{E}{\hbar \omega} \right)(\alpha) - |m(\alpha)| - 1 \right]\]
+\[ \quad m(\alpha) = - \left| \left(\frac{E}{\hbar \omega} \right)(\alpha) - 1 \right| + 2 \floor{ \frac{1}{2}\left[\alpha - 1 - \left( \left(\frac{E}{\hbar \omega} \right)(\alpha) - 1 \right)\left(\frac{E}{\hbar \omega} \right)(\alpha) \right] }
+\]
+\[
+\left(\frac{E}{\hbar \omega} \right)(\alpha) = \ceil{\frac{1}{2}\left( 1 + 4\alpha \right)^{1/2} - \frac{1}{2} }
+\]
 \section*{\uppercase{Results and discussion}}
 
 \section*{\uppercase{Conclusion and perspectives}}
 
 \section*{\uppercase{Appendix}}
-
+\begin{theorem}[Gaussian quadrature]
+Suppose $A \subseteq \mathbb{R}$ and there exist an orthogonal basis $\{H_n\}_{n=0}^\infty$ of polynomials for the set of square integrable functions on $A$ with respect to the inner product
+\[
+\langle f,g\rangle = \int_A (Wfg)(x)\, \diff x.
+\]
+Suppose also that $H_n$ is a degree $n$-polynomial and $|\langle H_n,H_n \rangle| = c_n$. If $f: \mathbb{R} \to \mathbb{R}$ is integrable on $A$ and there exist and $N \in \mathbb{N}$ such that $f(x) = (WP_{2N-1})(x)$, then 
+\[
+\int_A f(x)\, \diff x = c_0 \sum_{i=1}^N (H^{-1})_{0n} P_{2N-1}(x_n),
+\]
+where $\{x_n\}_{n=1}^N$ are the zeros of $H_N$ and $(H^{-1})_{0n}$ is the inverse of the matrix with elements $H_{nk} = H_k(x_n)$.
+\end{theorem}
+\begin{proof}
+Assume that the hypothesis is true, then in particular
+\begin{equation}
+f(x) = (WP_{2N-1})(x) \label{eq:product}
+\end{equation}
+Since $\{H_n\}_{n=1}^\infty$ is a polynomial basis for the space of square integrable $\mathbb{R} \to \mathbb{R}$-functions, there exist polynomials $Q_{N-1}$ and $R_{N-1}$, such that
+\begin{equation}
+P_{2N-1}(x) = H_N(x) R_{N-1} (x) + Q_{N-1}(x) = H_N(x) \sum_{k=0}^{N-1}r_nH_k(x) + \sum_{k=0}^{N - 1}q_k H_{k}(x) \label{eq:polynomial}
+\end{equation}
+Moreover, since the basis is orthogornal with respect to the given inner product, there exist normalization $c_{m}$ such that
+\begin{equation}
+\langle H_n,H_m\rangle = \int_A W(x) H_n(x) H_m(x)\, \diff x = c_{m}\delta_{mn}. \label{eq:orthonormality}
+\end{equation}
+Therefore the integral of interest is
+\begin{align}
+\int_A f(x) \,\diff x &\stackrel{\ref{eq:product}}{=} \int_A W(x)P_{2N-1}(x) \,\diff x \stackrel{\eqref{eq:polynomial}}{=} \int_A W(x)\left[ H_N(x) \sum_{k=0}^{N-1}r_nH_k(x) + \sum_{k=0}^{N - 1}q_k H_{k}(x) \right] \,\diff x \nonumber \\
+&\stackrel{\eqref{eq:orthonormality}}{=} 0 + \sum_{k=0}^{N - 1}\int_A W(x) q_k H_{k}(x) \,\diff x = \sum_{k=0}^{N - 1} q_k \int_A W(x) H_{k}(x)\cdot\undercbrace{1}_{=H_0} \,\diff x \stackrel{\eqref{eq:orthonormality}}{=} \sum_{k=0}^{N - 1} q_kc_{k} \delta_{k0} \nonumber \\
+&=q_0c_{0} \label{eq:coeff}
+\end{align}
+Since $H_N(x)$ is a degree $N$ polynomial by assumption, $H_N$ has exactly $N$ zeros by the fundamental theorem of algebra \parencite[12]{forster_lectures_1991}. Therefore there exist a set $\{x_k\}_{k=1}^N$ such that $H_N(x_k)=0$ for all $1 \leq k \leq N$. Define now $c_n = Q_{N-1}(x_n)$ and observe that
+\begin{equation}
+c_n = Q_{N-1}(x_n) \stackrel{\eqref{eq:polynomial}}{=} \sum_{k=0}^{N-1}q_k H_k(x_n) \equiv \sum_{k=0}^{N-1}q_k H_{nk} \label{eq:cn}
+\end{equation}
+Since $\{H_n\}$ is a basis, each element is linearly independent, and therefore the matrix consisting of elements $H_{nk}$ is invertible with inverse $(H^{-1})_{mn}$. By solving for $b_k$ we obtain
+\begin{equation}
+\sum_{n=0}^{N-1}(H^{-1})_{mn}Q_{N-1}(x_n) = \sum_{n=0}^{N-1}(H^{-1})_{mn} c_n \stackrel{\eqref{eq:cn}}{=} \sum_{k=0}^{N-1}\sum_{n=0}^{N-1}q_k(H^{-1})_{mn} H_{nk} = \sum_{k=0}^{N-1}q_k \delta_{mk} = q_{m} \label{eq:qm}
+\end{equation}
+But since $\{x_k\}$ are the zeros ($\dagger$) of $H_N$, we see that
+\begin{align}
+q_m &\stackrel{\eqref{eq:qm}}{=} \sum_{n=0}^{N-1}(H^{-1})_{mn}Q_{N-1}(x_n) \stackrel{\eqref{eq:polynomial}}{=} \sum_{n=0}^{N-1}(H^{-1})_{mn}\Big[ P_{2N-1}(x_n) - \undercbrace{H_N(x_n)}_{=0 \quad (\dagger) } R_{N-1} (x_n) \Big] \nonumber\\
+& \stackrel{(\dagger)}{=} \sum_{n=0}^{N-1}(H^{-1})_{mn}P_{2N-1}(x_n) \qquad \text{only if}\qquad q_0 = \sum_{n=0}^{N-1}(H^{-1})_{0n}P_{2N-1}(x_n). \label{q0}
+\end{align}
+By setting \eqref{q0} equal to \eqref{eq:coeff}, the theorem follows.
+\end{proof}
 
 \printbibliography
 \end{document}

@@ -1,0 +1,10 @@
+from numpy import *
+from matplotlib.pyplot import *
+
+d = loadtxt("psi.txt")
+for n in range(6):
+    x = d[n*500:500*(n+1)][:,0]
+    y = d[n*500:500*(n+1)][:,1]
+    plot(x,y)
+ylim(-1,1)
+show()

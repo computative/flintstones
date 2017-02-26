@@ -4,9 +4,16 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    basis.cpp
+    basis.cpp \
+    gc.cpp \
+    Coulomb_Functions.cpp
 
 HEADERS += \
     basis.h \
     maths.h \
-    adapt.h
+    gc.h \
+    Coulomb_Functions.hpp
+
+QMAKE_CXXFLAGS += -fopenmp
+LIBS += -fopenmp
+LIBS += -larmadillo -llapack -lblas

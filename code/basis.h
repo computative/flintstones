@@ -10,9 +10,11 @@ public:
     basis(int n);
     int * get_state(int n);
     int get_index(int * config);
-    int print();
-    int to_file(string filename);
-    double hermite(int n, double * x);
+    void print();
+    void to_file(string filename);
+    double hermite(int n, double x);
+    double psi_n(int n, double x);
+    double psi(int nx,int ny, double x, double y);
 
 private:
     int ** state;

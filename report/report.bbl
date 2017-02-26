@@ -16,47 +16,27 @@
   {}
 \endgroup
 
-\entry{zuur_mixed_2008}{book}{}
-  \name{author}{5}{}{%
+\entry{forster_lectures_1991}{book}{}
+  \name{author}{1}{}{%
     {{}%
-     {Zuur}{Z.}%
-     {Alain~F.}{A.~F.}%
-     {}{}%
-     {}{}}%
-    {{}%
-     {Ieno}{I.}%
-     {Elena~N.}{E.~N.}%
-     {}{}%
-     {}{}}%
-    {{}%
-     {Walker}{W.}%
-     {Neil~J.}{N.~J.}%
-     {}{}%
-     {}{}}%
-    {{}%
-     {Saveliev}{S.}%
-     {Anatoly~A.}{A.~A.}%
-     {}{}%
-     {}{}}%
-    {{}%
-     {Smith}{S.}%
-     {Graham~M.}{G.~M.}%
+     {Forster}{F.}%
+     {Otto}{O.}%
      {}{}%
      {}{}}%
   }
   \list{publisher}{1}{%
-    {{Springer}}%
+    {{Springer-Verlag}}%
   }
-  \strng{namehash}{ZAF+1}
-  \strng{fullhash}{ZAFIENWNJSAASGM1}
-  \field{labelyear}{2008}
-  \field{sortinit}{Z}
+  \strng{namehash}{FO1}
+  \strng{fullhash}{FO1}
+  \field{labelyear}{1991}
+  \field{sortinit}{F}
   \field{edition}{1}
-  \field{title}{Mixed Effects Models and Extensions in Ecology with {{R}}}
+  \field{title}{Lectures on {{Riemann}} Surfaces}
   \list{location}{1}{%
     {{New York}}%
   }
-  \field{year}{2008}
+  \field{year}{1991}
 \endentry
 
 \lossort

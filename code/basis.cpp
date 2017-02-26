@@ -1,11 +1,15 @@
 #include <iostream>
 #include <fstream>
+#include "math.h"
 #include "basis.h"
 #include "maths.h"
 #include "math.h"
-#include "adapt.h"
 
 using namespace std;
+
+const double hbar  = 1.0;
+const double m  = 1.0;
+const double w  = 1.0;
 
 basis::basis(int n) // number of shells is n
 {
@@ -35,7 +39,7 @@ int * basis::get_state(int ni)
     return state[ni-1];
 }
 
-int basis::print(){
+void basis::print(){
     int E = state[0][3];                // the lowest energy level
     for(int i = 0; i < numStates; i++){ // for each state
         if (state[i][3] != E) {         // if higher energy level
@@ -47,7 +51,7 @@ int basis::print(){
     cout << endl << "Legend: (nx,ny,sigma,E). sigma = 1 => spin = +1/2" << endl;
 }
 
-int basis::to_file(string filename){
+void basis::to_file(string filename){
     int E = state[0][3];
     ofstream myfile;
     myfile.open (filename);
@@ -61,8 +65,21 @@ int basis::to_file(string filename){
     myfile.close();
 }
 
-double basis::hermite(int n, double * x)
+double basis::hermite(int n, double x)
 {
-    Adapt s(1e-16);
-    ans = s.integrate(func,a,2*M_PI);
+    int N = floor(n/2);
+    double S = 0;
+    for (int m = 0; m<=N; m++) {
+        S += pow(-1,m)*pow(2* (x), n-2*m)/(factorial(m)*factorial(n-2*m));
+    }
+    return S*factorial(n);
+}
+
+
+double basis::psi_n(int n, double x) {
+    return pow(m*w/(M_PI*hbar),0.25)*hermite(n,x)*exp(-(x)*(x)/2.0)/sqrt(pow(2,n)*factorial(n));
+}
+
+double basis::psi(int nx,int ny, double x, double y){
+    return psi_n(nx, x) * psi_n(ny, y);
 }

@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_QML_DEBUG
 CFLAGS        = -pipe -g -Wall -W -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -fopenmp -g -std=gnu++11 -Wall -W -fPIC $(DEFINES)
 INCPATH       = -I../code -I. -I../../../../Qt/5.7/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/marius/Qt/5.7/gcc_64/bin/qmake
 DEL_FILE      = rm -f
@@ -36,7 +36,7 @@ DISTNAME      = flintstone1.0.0
 DISTDIR = /home/marius/Dokumenter/fys4411/flintstones/build-flintstone-Desktop_Qt_5_7_0_GCC_64bit-Debug/.tmp/flintstone1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS)  
+LIBS          = $(SUBLIBS) -fopenmp -larmadillo -llapack -lblas 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -49,9 +49,13 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../code/main.cpp \
-		../code/basis.cpp 
+		../code/basis.cpp \
+		../code/gc.cpp \
+		../code/Coulomb_Functions.cpp 
 OBJECTS       = main.o \
-		basis.o
+		basis.o \
+		gc.o \
+		Coulomb_Functions.o
 DIST          = ../../../../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt/5.7/gcc_64/mkspecs/common/unix.conf \
 		../../../../Qt/5.7/gcc_64/mkspecs/common/linux.conf \
@@ -198,8 +202,12 @@ DIST          = ../../../../Qt/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt/5.7/gcc_64/mkspecs/features/yacc.prf \
 		../../../../Qt/5.7/gcc_64/mkspecs/features/lex.prf \
 		../code/flintstone.pro basis.h \
-		maths.h ../code/main.cpp \
-		../code/basis.cpp
+		maths.h \
+		gc.h \
+		Coulomb_Functions.hpp ../code/main.cpp \
+		../code/basis.cpp \
+		../code/gc.cpp \
+		../code/Coulomb_Functions.cpp
 QMAKE_TARGET  = flintstone
 DESTDIR       = 
 TARGET        = flintstone
@@ -547,12 +555,21 @@ compiler_clean:
 
 ####### Compile
 
-main.o: ../code/main.cpp ../code/basis.h
+main.o: ../code/main.cpp ../code/basis.h \
+		../code/gc.h \
+		../code/maths.h \
+		../code/Coulomb_Functions.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../code/main.cpp
 
 basis.o: ../code/basis.cpp ../code/basis.h \
 		../code/maths.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o basis.o ../code/basis.cpp
+
+gc.o: ../code/gc.cpp ../code/gc.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o gc.o ../code/gc.cpp
+
+Coulomb_Functions.o: ../code/Coulomb_Functions.cpp ../code/Coulomb_Functions.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Coulomb_Functions.o ../code/Coulomb_Functions.cpp
 
 ####### Install
 

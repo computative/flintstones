@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.3.6)  29 JAN 2017 16:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.3.6)  24 FEB 2017 00:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1769,42 +1769,81 @@ Underfull \hbox (badness 10000) in paragraph at lines 20--23
 
 (/home/marius/texmf/tex/latex/mtpro2/umt2hrb.fd
 File: umt2hrb.fd 2009/1/30 v2.2 MathTimePro II Holey Roman Bold (PCTeX/WaS)
-) [1
+)
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 29.
+ (../resources/output.txt
+Overfull \hbox (34.54257pt too wide) in paragraph at lines 3--4
+[][][][][][][][][][]  
+ []
 
-]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 38.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 38.
+)
+Overfull \hbox (139.54227pt too wide) in paragraph at lines 4--29
+[][][][][][][][][][][][]  
+ []
+
+
+Overfull \hbox (0.22305pt too wide) in paragraph at lines 30--31
+\T1/ntxtlf/m/n/10.95 Suppose the prin-ci-pal quan-tum num-bers of two-electron 
+state in-dexed by $\LMP1/mtt/m/it/10.95 t$ \T1/ntxtlf/m/n/10.95 are $\LMP1/mtt/
+m/it/10.95 n[]; m[]$\T1/ntxtlf/m/n/10.95 , $\LMP1/mtt/m/it/10.95 V.r/ \LMP2/mtt
+/m/n/10.95 D ^^@\LMP1/mtt/m/it/10.95 e[]=.4^^Y[]"[]r/$
+ []
+
+
+Overfull \hbox (7.79015pt too wide) in paragraph at lines 30--31
+\T1/ntxtlf/m/n/10.95 de-note the Coloumb po-ten-tial, $\LMP1/mtt/m/it/10.95 p; 
+q; r; s \LMP2/mtt/m/n/10.95 2 f\LMP1/mtt/m/it/10.95 1; 2; [] \LMP2/mtt/m/n/10.9
+5 g$ \T1/ntxtlf/m/n/10.95 and let $\LMP1/mtt/m/it/10.95 A \LMP2/mtt/m/n/10.95 D
+ f\LMP1/mtt/m/it/10.95 p; q; r; s\LMP2/mtt/m/n/10.95 g$\T1/ntxtlf/m/n/10.95 , $
+\LMP1/mtt/m/it/10.95 B \LMP2/mtt/m/n/10.95 D f\LMP1/mtt/m/it/10.95 .1; p/; .2; 
+q/; .1; r/; .2; s/\LMP2/mtt/m/n/10.95 g$
+ []
+
+[1
+
+] [2] [3]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 95.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 95.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 38.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 38.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 95.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 95.
 Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package logreq Info: Writing requests to 'report.run.xml'.
 \openout1 = `report.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 38.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 95.
  ) 
 Here is how much of TeX's memory you used:
- 38834 strings out of 493033
- 855726 string characters out of 6134146
- 1297619 words of memory out of 5000000
- 41712 multiletter control sequences out of 15000+600000
- 147357 words of font info for 79 fonts, out of 8000000 for 9000
+ 39263 strings out of 493033
+ 859462 string characters out of 6134146
+ 1303528 words of memory out of 5000000
+ 42119 multiletter control sequences out of 15000+600000
+ 151506 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,7n,92p,1022b,1458s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 57i,14n,92p,1022b,1465s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf.enc}</ho
 me/marius/texmf/fonts/type1/pctex/mtpro2/mt2exa.pfb></home/marius/texmf/fonts/t
-ype1/pctex/mtpro2/mt2hbit.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2m
-is.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2mit.pfb></home/marius/te
-xmf/fonts/type1/pctex/mtpro2/mt2sys.pfb></home/marius/texmf/fonts/type1/pctex/m
-tpro2/mt2syt.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/tex-gyr
-e/qtmb.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/tex-gyre/qtmr
-.pfb></usr/local/texlive/2015/texmf-dist/fonts/type1/public/tex-gyre/qtmri.pfb>
-</usr/local/texlive/2015/texmf-dist/fonts/type1/public/txfonts/t1xtt.pfb>
-Output written on report.pdf (1 page, 124507 bytes).
+ype1/pctex/mtpro2/mt2exe.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2hb
+is.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2hbit.pfb></home/marius/t
+exmf/fonts/type1/pctex/mtpro2/mt2mif.pfb></home/marius/texmf/fonts/type1/pctex/
+mtpro2/mt2mis.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2mit.pfb></hom
+e/marius/texmf/fonts/type1/pctex/mtpro2/mt2syat.pfb></home/marius/texmf/fonts/t
+ype1/pctex/mtpro2/mt2syf.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2sy
+s.pfb></home/marius/texmf/fonts/type1/pctex/mtpro2/mt2syt.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/tex-gyre/qtmb.pfb></usr/local/texlive/201
+5/texmf-dist/fonts/type1/public/tex-gyre/qtmr.pfb></usr/local/texlive/2015/texm
+f-dist/fonts/type1/public/tex-gyre/qtmri.pfb></usr/local/texlive/2015/texmf-dis
+t/fonts/type1/public/txfonts/t1xtt.pfb>
+Output written on report.pdf (3 pages, 182405 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
- 44 compressed objects within 1 object stream
- 3 named destinations out of 1000 (max. 500000)
+ 155 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
+ 18 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
