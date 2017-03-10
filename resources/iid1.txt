@@ -1,0 +1,11 @@
+Fermi level: 4 Number of shells: 4
+10.7474705
+Fermi level: 4 Number of shells: 5
+10.7455159
+Fermi level: 4 Number of shells: 6
+10.7448655
+Fermi level: 4 Number of shells: 7
+10.7446782
+Fermi level: 4 Number of shells: 9
+10.7444466
+Fermi level: 4 Number of shells: 13

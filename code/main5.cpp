@@ -24,40 +24,23 @@ double onebody(int n, int m);
 
 int main(int, char *[])
 {
-    int R = 6;
-    int N = R*(R+1);
-    a = 0;
-    basis B = basis(R*(R+1));
-    mat C;
-    C.load("F6_R6.mat");
-    r = linspace(0,5,500);
-    theta = linspace(-M_PI,M_PI,500);
-    mat Y = zeros<mat>(N,N);
-    double sum;
-    for (int i = 0; i < size(r); i++ ) {
-        for (int j = 0; j < size(theta); j++ ) {
-            sum = 0;
-            for (int k = 0; k < N; k++)
-                sum += C(a,k)*B.psi_n(0, 1);
-        }
-    }
-    cout << B.psi_n(0, 1) << endl;
-    return 0;
-    int list [2] = {2,6};
-    int jist [2] = {4,6};
+    int list [8] = {20,20,20,20,20,20,20,20};
+    int jist [7] = {3,3,3,3,3,3,3};
+    //int list [8] = {2,4,6,8,12,14,18,20};
+    //int jist [7] = {3,4,5,6,7,9,13};
 
     #pragma omp parallel num_threads(2)
     {
     int id = omp_get_thread_num();
-    //int threads = omp_get_num_threads();
+    int threads = omp_get_num_threads();
     ofstream outfile;
     outfile.open ("id" + to_string(id) + ".txt");
-        for (int u = 0; u < 2; u++) {
+        for (int u = 0; u < 7; u++) {
             int F = list[id]; // fermi level
             // truncation limit
             int R = jist[u]; // num shells
             int N = R*(R+1); // num of states less than R
-            //outfile << "Fermi level: " << F << " Number of shells: " << R << endl;
+            outfile << "Fermi level: " << F << " Number of shells: " << R << endl;
             vec singleparticleH = zeros<vec>(N);
             for (int i = 0; i<N; i++) {
                 singleparticleH[i] = onebody(n(i+1), m(i+1));
@@ -80,7 +63,7 @@ int main(int, char *[])
             vec newenergies = zeros<vec>(N);
             vec spenergies;
 
-            //cout << R << endl;
+            cout << R << endl;
 
             int j = 0;
             //cout << "counting..." << endl;
@@ -204,10 +187,9 @@ int main(int, char *[])
                     }
                 }
             }
-            C.save("F" + to_string(F) + "_R" + to_string(R) + ".mat" );
-            //outfile <<  setprecision(9) << EHF << endl;
+            outfile <<  setprecision(9) << EHF << endl;
         }
-        //outfile.close();
+        outfile.close();
     }
     return 0;
 }
