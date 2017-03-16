@@ -39,6 +39,149 @@
   \field{year}{1991}
 \endentry
 
+\entry{griffiths_introduction_2005}{book}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Griffiths}{G.}%
+     {David~Jeffery}{D.~J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Pearson Prentice Hall}}%
+  }
+  \strng{namehash}{GDJ1}
+  \strng{fullhash}{GDJ1}
+  \field{labelyear}{2005}
+  \field{sortinit}{G}
+  \field{edition}{2}
+  \field{title}{Introduction to Quantum Mechanics}
+  \list{location}{1}{%
+    {{Upper Saddle River, New Jersey}}%
+  }
+  \field{year}{2005}
+\endentry
+
+\entry{lay_linear_2012}{book}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Lay}{L.}%
+     {David~C.}{D.~C.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Addison-Wesley}}%
+  }
+  \strng{namehash}{LDC1}
+  \strng{fullhash}{LDC1}
+  \field{labelyear}{2012}
+  \field{sortinit}{L}
+  \field{edition}{4}
+  \field{pagetotal}{481}
+  \field{title}{Linear Algebra and Its Applications}
+  \list{location}{1}{%
+    {{Boston}}%
+  }
+  \field{year}{2012}
+\endentry
+
+\entry{lindstrom_mathematical_2016}{book}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Lindstrøm}{L.}%
+     {Tom}{T.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{University of Oslo}}%
+  }
+  \strng{namehash}{LT1}
+  \strng{fullhash}{LT1}
+  \field{labelyear}{2016}
+  \field{sortinit}{L}
+  \field{title}{Mathematical Analysis}
+  \list{location}{1}{%
+    {{Oslo}}%
+  }
+  \field{year}{2016}
+\endentry
+
+\entry{munkres_topology_2000}{book}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Munkres}{M.}%
+     {James}{J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Prentice Hall, Inc.}}%
+  }
+  \strng{namehash}{MJ1}
+  \strng{fullhash}{MJ1}
+  \field{labelyear}{2000}
+  \field{sortinit}{M}
+  \field{edition}{2}
+  \field{title}{Topology}
+  \list{location}{1}{%
+    {{Upper Saddle River, New Jersey}}%
+  }
+  \field{year}{2000}
+\endentry
+
+\entry{sakurai_modern_2011}{book}{}
+  \name{author}{1}{}{%
+    {{}%
+     {Sakurai}{S.}%
+     {Jun~John}{J.~J.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Pearson Education, Inc.}}%
+  }
+  \strng{namehash}{SJJ1}
+  \strng{fullhash}{SJJ1}
+  \field{labelyear}{2011}
+  \field{sortinit}{S}
+  \field{edition}{2}
+  \field{title}{Modern {{Quantum Mechanics}}}
+  \list{location}{1}{%
+    {{San Francisco}}%
+  }
+  \field{year}{2011}
+\endentry
+
+\entry{stein_complex_2003}{book}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Stein}{S.}%
+     {Elias~M.}{E.~M.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Shakarchi}{S.}%
+     {Rami}{R.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Princeton University Press}}%
+  }
+  \strng{namehash}{SEMSR1}
+  \strng{fullhash}{SEMSR1}
+  \field{labelyear}{2003}
+  \field{sortinit}{S}
+  \field{edition}{1}
+  \field{title}{Complex Analysis}
+  \list{location}{1}{%
+    {{Princeton}}%
+  }
+  \field{year}{2003}
+\endentry
+
 \lossort
 \endlossort
 

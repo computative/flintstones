@@ -40,11 +40,10 @@ bool exists(const std::map<int, Args...>& m, int key, Krgs ...keys)
 int main(int, char *[])
 {
     map < int , map < int, map < int, map< int, double > > > > nninteract;
-
     double hw = 1;
     int F = 6; // fermi level
     // truncation limit
-    int R = 5; // num shells
+    int R = 4; // num shells
     int N = R*(R+1); // num of states less than R
     vec singleparticleH = zeros<vec>(N);
     for (int i = 0; i<N; i++) {
@@ -53,6 +52,7 @@ int main(int, char *[])
     // inital C- and rho-matrix
     mat C = eye<mat>(N,N);
     mat rho = zeros<mat>(N,N);
+    // density matrix, konvensjon som i pythonkode
     for (int gamma = 0; gamma <N; gamma++) {
         for (int delta = 0; delta <N; delta++) {
             for (int a = 0; a <F; a++)
@@ -66,18 +66,27 @@ int main(int, char *[])
     vec oldenergies = zeros<vec>(N);
     vec newenergies = zeros<vec>(N);
     vec spenergies;
+
+    vec nninteraction = zeros<vec>(j);
+    int i = 0;
     double M, Ms;
     for (int alpha = 0; alpha < N; alpha++) {
         for (int beta = 0; beta < N; beta++ ) {
             for (int gamma = 0; gamma < N; gamma++) {
                 for (int delta = 0; delta < N; delta ++) {
-                    int ml1 = m(alpha+1); int ml2 = m(beta+1); int ml3 = m(gamma+1); int ml4 = m(delta+1);
-                    if (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1)+ sigma(delta+1) and  ml1 + ml2 == ml3 + ml4) {
-                        int n1 = n(alpha+1); int n2 = n(beta+1); int n3 = n(gamma+1); int n4 = n(delta+1);
+                    int ml1 = m(alpha+1);
+                    int ml2 = m(gamma+1);
+                    int ml3 = m(beta+1);
+                    int ml4 = m(delta+1);
+                    if (kronecker(sigma(alpha+1), sigma(beta+1))*kronecker(sigma(gamma+1), sigma(delta+1)) and  ml1 + ml2 == ml3 + ml4) {
+                        int n1 = n(alpha+1);
+                        int n2 = n(gamma+1);
+                        int n3 = n(beta+1);
+                        int n4 = n(delta+1);
                         M = ml1 + ml2;
-                        Ms = sigma(alpha+1) + sigma(beta+1);
-                        nninteract[M][Ms][merge(alpha,beta,N)][merge(gamma,delta,N)] =
-                              kronecker(sigma(alpha+1), sigma(gamma+1))*kronecker(sigma(beta+1), sigma(delta+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4)
+                        Ms = sigma(alpha+1) + sigma(gamma+1);
+                        nninteract[M][Ms][merge(alpha,gamma,N)][merge(beta,delta,N)] =
+                              kronecker(sigma(alpha+1), sigma(beta+1))*kronecker(sigma(gamma+1), sigma(delta+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4)
                             - kronecker(sigma(alpha+1), sigma(delta+1))*kronecker(sigma(gamma+1), sigma(beta+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
                     }
                 }
@@ -86,12 +95,16 @@ int main(int, char *[])
     }
     while (hf_count < maxHFiter and difference > epsilon) {
         mat HFmatrix = zeros<mat>(N,N);
+        i = 0;
         for (int alpha = 0; alpha < N; alpha++) {
             for (int beta = 0; beta < N; beta++ ) {
                 for (int gamma = 0; gamma < N; gamma++) {
                     for (int delta = 0; delta < N; delta ++){
-                        int ml1 = m(alpha+1); int ml2 = m(gamma+1); int ml3 = m(beta+1); int ml4 = m(delta+1);
-                        if ( sigma(alpha+1) + sigma(gamma+1) == sigma(beta+1) + sigma(delta+1) and  ml1 + ml2 == ml3 + ml4) {
+                        int ml1 = m(alpha+1);
+                        int ml2 = m(gamma+1);
+                        int ml3 = m(beta+1);
+                        int ml4 = m(delta+1);
+                        if (kronecker(sigma(alpha+1), sigma(beta+1))*kronecker(sigma(gamma+1), sigma(delta+1)) and  ml1 + ml2 == ml3 + ml4) {
                             M = ml1 + ml2;
                             Ms = sigma(alpha+1) + sigma(gamma+1);
                             HFmatrix(alpha,beta) += rho(gamma,delta)*nninteract[M][Ms][merge(alpha,gamma,N)][merge(beta,delta,N)];
@@ -99,23 +112,28 @@ int main(int, char *[])
                     }
                 }
             }
+            //  Adding the one-body term, here plain harmonic oscillator
             HFmatrix(alpha,alpha) += singleparticleH[alpha];
         }
         eig_sym( spenergies, C, HFmatrix);
         rho = zeros<mat>(N,N);
         for (int gamma = 0; gamma <N; gamma++) {
+            // density matrix, konvensjon som i pythonkode
             for (int delta = 0; delta <N; delta++) {
+                //rho(gamma,delta) = 0;
                 for (int a=0; a <F; a++)
                     rho(gamma,delta) += C(gamma,a)*C(delta,a);
             }
         }
 
         newenergies = spenergies;
+        // Brute force computation of difference between previous and new sp HF energies
         difference = 0.0;
         for (int i = 0; i<N; i++) {
             difference += abs(newenergies[i]-oldenergies[i])/N;
         }
         oldenergies = newenergies;
+
         hf_count += 1;
     }
 
@@ -126,15 +144,42 @@ int main(int, char *[])
         for (int beta = 0; beta < N; beta++ ) {
             for (int gamma = 0; gamma < N; gamma++) {
                 for (int delta = 0; delta < N; delta ++){
+                    // continue hvis integral er null
+                    /*
                     int ml1 = m(alpha+1);
                     int ml2 = m(beta+1);
                     int ml3 = m(gamma+1);
                     int ml4 = m(delta+1);
-                    if (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1) and  ml1 + ml2 == ml3 + ml4) {
+                    if (kronecker(sigma(alpha+1), sigma(gamma+1))*kronecker(sigma(beta+1), sigma(delta+1)) and  ml1 + ml2 == ml3 + ml4) {
                         M = ml1 + ml2;
                         Ms = sigma(alpha+1) + sigma(beta+1);
-                        EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteract[M][Ms][merge(alpha,beta,N)][merge(gamma,delta,N)];
-                    }
+                        if (nninteract[M][Ms][merge(gamma,delta,N)].find(merge(alpha,beta,N)) != nninteract[M][Ms][merge(gamma,delta,N)].end()) {
+                            EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteract[M][Ms][merge(gamma,delta,N)][merge(alpha,beta,N)];
+                        } else  if (nninteract[M][Ms][merge(alpha,beta,N)].find(merge(delta,gamma,N)) != nninteract[M][Ms][merge(alpha,beta,N)].end()) {
+                            EHF -= -0.5*rho(alpha,gamma)*rho(beta,delta)*nninteract[M][Ms][merge(alpha,beta,N)][merge(delta,gamma,N)];
+                            continue;
+                        } else if (nninteract[M][Ms][merge(beta,alpha,N)].find(merge(gamma,delta,N)) != nninteract[M][Ms][merge(beta,alpha,N)].end()) {
+                            EHF -= -0.5*rho(alpha,gamma)*rho(beta,delta)*nninteract[M][Ms][merge(beta,alpha,N)][merge(gamma,delta,N)];
+                            continue;
+                        } else {
+                            EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteract[M][Ms][merge(alpha,beta,N)][merge(gamma,delta,N)];
+                        }
+                    }*/
+
+                    int ml1 = m(alpha+1);
+                    int ml2 = m(beta+1);
+                    int ml3 = m(gamma+1);
+                    int ml4 = m(delta+1);
+                    if (ml1 + ml2 != ml3 + ml4)
+                        continue;
+                    int n1 = n(alpha+1);
+                    int n2 = n(beta+1);
+                    int n3 = n(gamma+1);
+                    int n4 = n(delta+1);
+                    if (kronecker(sigma(alpha+1), sigma(gamma+1))*kronecker(sigma(beta+1), sigma(delta+1)))
+                    EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4);
+                    if (kronecker(sigma(alpha+1), sigma(delta+1))*kronecker(sigma(gamma+1), sigma(beta+1)))
+                    EHF -= -0.5*rho(alpha,gamma)*rho(beta,delta)*Coulomb_HO(hw, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
                 }
             }
         }
@@ -142,7 +187,7 @@ int main(int, char *[])
     cout << EHF<< endl;
     return 0;
 }
-/*
+
 int A(int m, int l) { // map from 2-touples to a section of the natural numbers
     double G = (m+l);
     return ceil(G/2.*(G/2 - 1)) + G - max(m,l);
@@ -173,7 +218,7 @@ void invA(int A,int &k, int &l) {
     l = G-k;
     return;
 }
-*/
+
 int sigma(int a) {
     if (a%2)
         return -1;
