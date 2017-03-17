@@ -1,6 +1,7 @@
 \documentclass[11pt,english,a4paper]{article}
 \usepackage{babel}
 \input{/home/marius/Dokumenter/preamples/phys_en.pre}
+\usepackage{lstautogobble}
 \author{\normalsize Marius Jonsson (Institutt for Vanskelig Fysikk, Oscars gate 19, 0352 OSLO, Norway) \\\\
 \vspace{5px}
 \normalsize \texttt{http://github.com/kingoslo/flintstones}}
@@ -10,39 +11,37 @@
 \DeclareUnicodeCharacter{2212}{$-$}
 \begin{document}
 \maketitle
-\begin{abstract} \normalsize This is a report submission for the first project of «Computational physics 2» at the Institute of Physics, University of Oslo, autumn 2016.
+\begin{abstract} \normalsize This is a report submission for the first project of «Computational physics 2» at the Institute of Physics, University of Oslo, autumn 2016.\\
+\\
+This report summarizes the result of a variety of tasks. We implemented of a class of Harmonic oscillator basis functions. We found analytical expressions for maps with relate state numbers to the quantum numbers of charged particles in harmonic oscillator potential. We found analytical expression for the Hermite polynomials and plotted the 1 dimensional single particle wavefunctions of the harmonic oscillator. We showed that the Hartree-Fock basis is orthonormal, that the Harmonic oscillator and Hartree-Fock slater determinants are related by a complex number $e^{ i \alpha}$, $\alpha \in \mathbb{R}$. We showed that the slater determintant comprised of Hartree-Fock basis is normalized with respect to any norm and derived the Hartree-Fock equations. We found the Hartree-Fock limit for a range of values of the Fermi-level and deduced that the Hartree-Fock energies for 2,4,6,8,12,14,18 and 20 electrons are 3.1619138, 10.744397, 20.719251, 34.152217, 66.911362, 87.12719, 132.7760, 158.0046 $\hbar \omega$ respectively. Lastly we found that the complexity of the Hartree-Fock method follows $O(\beta^{N^2/2})$, $\beta \in \mathbb{R}$ and $N$ is truncation limit of the Hartree-Fock series.
 \end{abstract}
 \lstset{
+  autogobble=true
   xleftmargin=.2\textwidth, xrightmargin=.2\textwidth
 }
-
-In this project we completed a variety of tasks to prepare ourselves for the final term project. We set up basis for compact subsets of $\mathbb{R}^2$ using quantum harmonic oscillator state functions. We did this by making a $\alpha \mapsto (n_x,n_y)$ bijection from the set of natural numbers to the two-tuples of harmonic oscillator principal quantum numbers on $\mathbb{R}^2$. In the class we included method to evaluate any given state basis function at the point $x \in \mathbb{R}^2$ and a method to return single Hermite polynomials. The latter was useful when we went ahead to build a Gaussian-quadrature Hermite integrator. The intent was that we would use this integrator to compute Coulomb interaction matrix elements,  $\langle \alpha \beta | V | \gamma\delta \rangle$, for the quantum dot variety of the Hartree-Fock method. However, halfway through the project period, the course administration decided to supply a function which calculated the matrix elements in polar coordinates. The Hermite integrator was therefore never implemented further than for the integration of polynomials. Finally we wrote a program to solve the induced Hartree-Fock equations. Suppose $\mu$ is the Fermi level of some quantum dot. We wanted to find a $N \times N$-matrix $C$ and an $N$-tuple $(\varepsilon_1, \cdots, \varepsilon_N)$ such that
+\section*{\uppercase{Introduction}}
+In this project we completed a variety of tasks which is a natural preparation to complete a variational monte-carlo quantum dot code. They are preparations for the final term project. We set up basis for $L_2$ on compact subsets of $\mathbb{R}^2$ using quantum harmonic oscillator state functions. We did this by making a $\alpha \mapsto (n_x,n_y)$ bijection from the set of natural numbers to the two-tuples of harmonic oscillator principal quantum numbers on $\mathbb{R}^2$. In the class we included a method for evaluating any given state basis function at the point $x \in \mathbb{R}^2$ and a method to return single Hermite polynomials. The latter was useful when we went ahead to build a Gaussian-quadrature Hermite integrator. The intent was that we would use this integrator to compute Coulomb interaction matrix elements,  $\langle \alpha \beta | v | \gamma\delta \rangle$, for the quantum dot variety of the Hartree-Fock method. However, halfway through the project period, the course administration supplied a function which calculated the matrix elements in polar coordinates. The Hermite integrator was therefore rendered redundant and not tested further than for the integration of polynomials. Finally we wrote a program to solve the induced Hartree-Fock equations, which we will derive from the Hartree-Fock functional. Suppose $\mu$ is the Fermi level of some quantum dot, $v$ is the Coulomb potential and $h_0$ is the Harmonic oscillator Hamiltonian. We wanted to determine the states $ |  i \rangle$ such that 
 \begin{equation}
-\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  j=1}^\mu \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N C_{  j \gamma}^* C_{  j \delta} \Big( \langle \alpha \gamma | V | \beta \delta \rangle - \langle \alpha \gamma | V | \delta \beta \rangle \Big).
+E = \sum_{i=1}^\mu \langle i | h_0 | i \rangle + \frac{1}{2} \sum_{i=1}^\mu \sum_{j = 1}^\mu \left[ \langle ij | v | ij \rangle - \langle ij | v | ji \rangle  \right]
 \label{eq:HF}
 \end{equation}
-We will call these equations the Hartree-Fock equations.
-\\
-\\
 The report is structured by «introduction»-, «methods»-, «results and discussion»- and finally a «conclusion and perspectives»-sections.
 \section*{\uppercase{Methods}}
-As we noted, the project required the completion of a variety of tasks. At the time of writing, it was unclear that there was any overarching methods. We will therefore use this section to present how the tasks were completed.\\
-\\
-We set up the harmonic oscillator is several steps. First we used the energy function 
+As explained in the introduction, the project comprised of the completion of a variety of tasks. Although the derivation of the Hartree-Fock equations are the highlight of the project, we will present the methods and results in a logical order leading up to this result at end. First, we set up a harmonic oscillator basis class is several steps. This would be used in project 2, and was initially intended to be used in this project. In order to do this we used the energy function 
 \[
-E(n_x,n_y) = \hbar \omega \left( n_x + n_y + 1 \right) \qquad \text{\parencite[92]{sakurai_modern_2011}\parencite[190]{griffiths_introduction_2005} }
+E(n_x,n_y) = \hbar \omega \left( n_x + n_y + 1 \right). \qquad \text{\parencite[92]{sakurai_modern_2011}\parencite[190]{griffiths_introduction_2005} }
 \]
-Clearly, this uniquely determines a hierarchy of groups of states ordered by energy. Assuming the particles were fermions we allowed exactly two spin projections for all combinations of $n_x$ and $n_y$. As you may recall, we were not satisfied by a group hierarchy: From this we constructed a bijection $\alpha \mapsto (n_x,n_y)$ from the set of natural numbers using a dictionary type ordering \parencite[26]{munkres_topology_2000} on $\mathbb{N} \times \mathbb{N}$. We present a table in the results. We will also present the assignment rule for the bijection in the case of polar coordinates.\\
+This clearly determine an ordering on the states of the harmonic oscillator by energy. From this we constructed a bijection $\alpha \mapsto (n_x,n_y)$ from the set of natural numbers using a dictionary type ordering \parencite[26]{munkres_topology_2000} on $\mathbb{N} \times \mathbb{N}$. Assuming the particles were fermions we allowed exactly two spin projections for all combinations of $n_x$ and $n_y$. We present a table in the results. We will also present the assignment rule for the bijection in the case of polar coordinates.\\
 \\
-As explained, it was natural to implement the Hermite polynomials into the class. We know that the Hermite polynomials are of the form $ H_n(x) = \sum_{  m=0}^n a_m (2x)^m $. Under this hypothesis, insertion in the recurrence relation $H_{  n+1}(x) = 2x H_n(x) - 2n H_n(x)$ straightforwardly reduces to
+It was natural to implement the Hermite polynomials into the same class. We know that the Hermite polynomials are of the form $ H_n(x) = \sum_{  m=0}^n a_m (2x)^m $. Under this hypothesis, insertion in the recurrence relation $H_{  n+1}(x) = 2x H_n(x) - 2n H_n(x)$ straightforwardly reduces to
 \[
 H_n(x) = n! \sum_{m=0}^{\floor{n/2}} \frac{(-1)^m}{m!(n-2m)!}(2x)^{n-2m},
 \]
-in the case we treat $n$ as being even and odd separately. Here we mean that $\floor{\cdot}$ denotes the floor function on $\mathbb{R}$. Due to separation of variables, and according to \cite[93]{sakurai_modern_2011}, the harmonic oscillator state functions are
+by deduction in the case we treat $n$ as being even and odd separately. Here we mean that $\floor{\cdot}$ denotes the floor function on $\mathbb{R}$. Due to separation of variables, and according to \cite[93]{sakurai_modern_2011}, the harmonic oscillator state functions are
 \[
 \psi_{  n_x,n_y}(x,y) = \psi_{  n_x}(x)\psi_{  n_y}(y), \qquad \psi_{n}(x) = \left( \frac{m \omega}{\pi \hbar} \right)^{1/4} \frac{H_n( (m \omega/\hbar)^{1/2} x )}{(2^n n!)^{1/2}}\exp\left( - m \omega/(2\hbar) x^2 \right).
 \]
-Having deduced an expression for $H_n$, implementing this into any harmonic basis for quantum dots is straightforward.\\
+Having deduced an expression for $H_n$, implementing this into any harmonic oscillator basis for quantum dots is straightforward.\\
 \\
 The next task which was initiated was to implement a Gaussian quadrature algorithm. \begin{theorem}[Gaussian quadrature]
 Suppose $A \subseteq \mathbb{R}$ and there exist an orthogonal basis $\{H_n\}_{n=0}^\infty$ of polynomials for the set of square integrable functions on $A$ with respect to the inner product
@@ -54,25 +53,17 @@ Suppose also that $H_n$ is a degree $n$-polynomial and $|\langle H_n,H_n \rangle
 \int_A f(x)\, \diff x = c_0 \sum_{i=1}^N (H^{-1})_{0n} P_{2N-1}(x_n),
 \]
 where $\{x_n\}_{n=1}^N$ are the zeros of $H_N$ and $(H^{-1})_{0n}$ is the inverse of the matrix with elements $H_{nk} = H_k(x_n)$.
-\end{theorem} Proof of the theorem is contained in the appendix. This method was implemented according to the theorem. In particular, as the course administration decided to switch to polar coordinates, an analytical expression was supplied, and the integrator was therefore only used to integrate holomorphic functions on $\mathbb{R}$, where according to \cite[9,18]{stein_complex_2003} and \ref{thm:quad}, the integrator is stable. However, since the integrand of $\langle \alpha \beta | V | \gamma\delta \rangle$ is not holomorphic, I am not able to argue that the integrator is suitable to compute $\langle \alpha \beta | V | \gamma\delta \rangle$. Lastly, we were encouraged to work out the expression for $\langle \alpha \beta | V | \gamma\delta \rangle$. Suppose the principal quantum numbers of two-electron state indexed by $t$ are $n_t,m_t$, $V(r) = -e^2/(4\pi^2\varepsilon_0 r)$ denote the Coloumb potential, $\alpha,\beta,\gamma,\delta \in \{1,2,\cdots\}$ and let $A=\{ \alpha,\beta,\gamma,\delta  \}$, $B = \{(1,\alpha),(2,\beta),(1,\delta),(2,\gamma)\}$ then a parameterisation of the matrix element $\langle \alpha \beta | V  |  \gamma \delta \rangle$ is
-\begin{align*}
-\langle \alpha \beta | V  |  \gamma \delta \rangle &= \iiiint_{\mathbb{R}^4} \psi^*_\alpha(\vec{r}_1)\psi^*_\beta(\vec{r}_2)V(\| \vec{r}_1-\vec{r}_2 \|)\psi^*_\delta(\vec{r}_1)\psi^*_\gamma(\vec{r}_2)\,\diff \vec{r}_1 \, \diff \vec{r}_2\\
-&= - C \int_{-\infty}^\infty\int_{-\infty}^\infty\int_{-\infty}^\infty\int_{-\infty}^\infty \prod_{(k,t)\in B} H_{n_t}(u_k) H_{m_t}(v_k)\frac{\exp\Big(\sum_{i=1}^2 u_i^2 + v_i^2 \Big)\diff u_1 \diff v_1 \diff u_2 \diff v_2}{([u_1 - u_2]^2 + [v_1 - v_2]^2)^{1/2}}, \\
-&\text{for normalization factor} \quad C = \frac{\omega^{1/2} e^2}{4 \pi^3 \varepsilon_0}\Big( 2^{\sum_{i \in A} n_i + m_i}\prod_{j \in A}n_j!m_j! \Big)^{  -1/2}.
-\end{align*}
+\end{theorem} Proof of the theorem is contained in the appendix. This method was implemented according to the theorem. In particular, as the course administration decided to switch to polar coordinates, an analytical expression was supplied, and the integrator was therefore only used to integrate polynomials on $\mathbb{R}$. However the integration of Holomorphic functions on $\mathbb{R}$ should be stable according to \cite[9,18]{stein_complex_2003} and \ref{thm:quad}. However, since the integrand of $\langle \alpha \beta | v | \gamma\delta \rangle$ is not holomorphic, I am not able to argue that the integrator will stably compute $\langle \alpha \beta | v | \gamma\delta \rangle$, without dealing with the singularity at the origin somehow. \\
+\\
+Lastly, we were encouraged to work out the expression for $\langle \alpha \beta | v | \gamma\delta \rangle$. Suppose the principal quantum numbers of two-electron state indexed by $t$ are $n_t,m_t$, $V(r) = -Z/(4\pi^2\varepsilon_0 r)$ denote the Coloumb potential, $\alpha,\beta,\gamma,\delta \in \{1,2,\cdots\}$ and let $A=\{ \alpha,\beta,\gamma,\delta  \}$, $B = \{(1,\alpha),(2,\beta),(1,\delta),(2,\gamma)\}$ then a parameterisation of the matrix element $\langle \alpha \beta | v  |  \gamma \delta \rangle$ is
+\begin{align}
+\langle \alpha \beta | v |  \gamma \delta \rangle &= \iiiint_{\mathbb{R}^4} \psi^*_\alpha(\vec{r}_1)\psi^*_\beta(\vec{r}_2)V(\| \vec{r}_1-\vec{r}_2 \|)\psi^*_\delta(\vec{r}_1)\psi^*_\gamma(\vec{r}_2)\,\diff \vec{r}_1 \, \diff \vec{r}_2 \nonumber \\
+&= - C \int_{-\infty}^\infty\int_{-\infty}^\infty\int_{-\infty}^\infty\int_{-\infty}^\infty \prod_{(k,t)\in B} H_{n_t}(u_k) H_{m_t}(v_k)\frac{\exp\Big(\sum_{i=1}^2 u_i^2 + v_i^2 \Big)\diff u_1 \diff v_1 \diff u_2 \diff v_2}{([u_1 - u_2]^2 + [v_1 - v_2]^2)^{1/2}}, \nonumber \\
+&\text{for normalization factor} \quad C = \frac{\omega^{1/2} Z}{4 \pi^3 \varepsilon_0}\Big( 2^{\sum_{i \in A} n_i + m_i}\prod_{j \in A}n_j!m_j! \Big)^{  -1/2}. \label{eq:matrixelt}
+\end{align}
+Lastly, we determined the Hartree-Fock energy by deriving the Hartree-Fock equations \eqref{eq:HFEqnations} from equation \ref{eq:HF}. You will see that this is a non-linear set of equations, which we solved iteratively. All $\langle \alpha \beta | v  |  \gamma \delta \rangle$ were pre calculated. It is easy to see that if one let 
 \[
-n(\alpha) = \frac{1}{2} \left[ \left(\frac{E}{\hbar \omega} \right)(\alpha) - |m(\alpha)| - 1 \right]\]
-\[ \quad m(\alpha) = - \left| \left(\frac{E}{\hbar \omega} \right)(\alpha) - 1 \right| + 2 \floor{ \frac{1}{2}\left[\alpha - 1 - \left( \left(\frac{E}{\hbar \omega} \right)(\alpha) - 1 \right)\left(\frac{E}{\hbar \omega} \right)(\alpha) \right] }
-\]
-\[
-\left(\frac{E}{\hbar \omega} \right)(\alpha) = \ceil{\frac{1}{2}\left( 1 + 4\alpha \right)^{1/2} - \frac{1}{2} }
-\]
-\[
-A(m,l) = \ceil{ \left( \frac{m+l}{2} \right)\left( \frac{m+l}{2} -1 \right) } + (m+l) - \max(m,l)
-\]
-Lastly, we solved the Hartree-Fock equations \ref{eq:HF} by iteration. All $\langle \alpha \beta | V  |  \gamma \delta \rangle$ were pre calculated. It is easy to see that if one let 
-\[
-V_{  \alpha \beta \gamma \delta} = \langle \alpha \beta | V  |  \gamma \delta \rangle - \langle \alpha \beta | V  |  \delta \gamma \rangle,
+V_{  \alpha \beta \gamma \delta} = \langle \alpha \beta | v  |  \gamma \delta \rangle - \langle \alpha \beta | v |  \delta \gamma \rangle,
 \]
 Then $V_{  \alpha \beta \gamma \delta}$ is anti-symmetric in its two first and last indecies:
 \[
@@ -80,27 +71,49 @@ V_{  \alpha \beta \gamma \delta} = -V_{  \beta\alpha  \gamma \delta} = -V_{  \al
 \]
 Moreover since $\psi_n$ can be made real
 \[
-V_{  \alpha \beta \gamma \delta} = V_{  \gamma \delta\alpha \beta}.
+V_{  \alpha \beta \gamma \delta} = V_{  \gamma \delta\alpha \beta},
 \]
-In addition, we can show that $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total spin of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle $. Similarly $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total angular momentum of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle$. For some choices of $\mu$ and $N$, this reduced the number of stored matrix by a few orders of magnitudes, since we could compute only a few elements, and let the algorithm use the symmetries still determine the correct matrix elements. Define for brevity $\rho_{ \gamma \delta} = \sum_{j=1}^\mu C_{  j \gamma}^* C_{  j \delta}$In this notation, the Hartree-Fock equations become:
+which you can verify from equation \eqref{eq:matrixelt}. In addition, we can show that $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total spin of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle $. Similarly $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total angular momentum of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle$. For some choices of $\mu$ and $N$, this reduced the number of stored matrix by a few orders of magnitudes, since we could compute only a few elements, and let the algorithm use the symmetries still determine the correct matrix elements. Define for brevity $\rho_{ \gamma \delta} = \sum_{j=1}^\mu C_{  j \gamma}^* C_{  j \delta}$. In this notation, we will prove in the results that the Hartree-Fock equations are:
+\begin{equation}
+\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N  \rho_{ \gamma \delta}V_{  \alpha \gamma \beta \delta} \label{eq:HFEqnations}
+\end{equation}
+As we explained, the equations were solved iteratively. We let the value of $C_{  \alpha \beta} = \text{diag}(1,1,\cdots 1,0,0,\cdots,0)$, where the number of one-elements were exactly $\mu$. Using this candidate for $C_{  \alpha \beta}$, $F_{  \alpha \beta}$ was determined for each iteration. Thereafter, the matrix $F$ was diagonalized $F = CDC^{  -1}$, where $D = \text{diag} ( e_1, \cdots, e_N)$. Such a decomposition exists since $F$ has exactly $N$ eigenvectors by construction from The Diagonalization theorem of linear algebra \parencite[282]{lay_linear_2012}. And $e_j$ are the single state energies since the columns of $C$ are eigenvectors of $F$.  Clearly then, the algorithm is implemented by a 5-dimensional loop. One for each index $\alpha, \beta, \gamma, \delta$, and one loop until the desired precision is obtained. We used a relative error of $10^{-5}$. In addition to the reduction of number of $V_{  \alpha \beta \gamma \delta}$ according to the built in symmetries, the remaining computation was parallelised. A work-stack was constructed upon execution of the program, and and an open mp critical block in the parallel region was was set up where threads could enter to fetch unfinished workload. The threads could complete work, then return to the block to fetch more work. The threads complete the work according to the conserved angular momentum and spin. That way the symmetries of $V_{  \alpha \beta \gamma \delta}$ could be used without one thread disturbing another thread. For brevity, the please see the github-page for the implementation: \texttt{http://github.com/kingoslo/flintstones}. Effort was made to ensure that the code ran correctly. And as you will see in the results, the code produced the correct ground state energies $E_0$ for a 56 combinations of $\mu$ an $N$. We determined the ground state energy by
 \[
-\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N  \rho_{ \gamma \delta}V_{  \alpha \gamma \beta \delta}
+E_0 = \sum_{i=1}^\mu e_i - \frac{1}{2} \sum_{i=1}^\mu \sum_{j=1}^\mu \left[ \langle ij |v|ij \rangle - \langle ij |v |ji \rangle  \right]  = \sum_{i=1}^\mu e_i - \frac{1}{2} \sum_{\alpha=1}^N\sum_{\beta = 1}^N \sum_{\gamma = 1}^N \sum_{\delta = 1}^N \rho_{  \alpha \gamma} \rho_{  \beta \delta} V_{  \alpha \beta \gamma \delta}.
 \]
-As we explained, the equations were solved iteritatively. We let the value of $C_{  \alpha \beta} = \text{diag}(1,1,\cdots 1,0,0,\cdots,0)$, where the number of one-elements were exactly $\mu$. Using this candidate for $C_{  \alpha \beta}$, $F_{  \alpha \beta}$ was determined for each iteration. Thereafter, the matrix $F$ was diagonalized $F = CDC^{  -1}$, where $D = \text{diag} ( \varepsilon_1, \cdots, \varepsilon_N)$. Such a decomposition exists since $F$ has exactly $N$ eigenvalues and $\varepsilon_j$ are the single state energies since the columns of $C$ are eigenvectors of $F$ by The Diagonalization theorem of linear algebra \parencite[282]{lay_linear_2012}. Clearly then, the algorithm is implemented by a 5-dimensional loop. One for each index $\alpha, \beta, \gamma, \delta$, and one loop until the desired precision is obtained. For brevity, the please see the github-page for the implementation: \texttt{http://github.com/kingoslo/flintstones}.\\
-\\
-Much effort was made to ensure that the code ran correctly. As we will see in the results, the code produced the correct energies for a number of values of $\mu$ an $N$.
 
 \section*{\uppercase{Results and discussion}}
-We introduce the results in the order they appeared in the project description.\\
+We introduce the results in the an order which logically lead up to the Hartree-Fock equations. First we wrote a class that set up the two dimensional harmonic oscillator basis according to energy. 
+\begin{figure}
+\center
+\input{../benchmark/functions.pgf}\\
+
+\caption{Top: The five first harmonic oscillator statefunctions output indicate that the harmonic oscillator class may have been implemented correctly. Bottom: The corresponding Hermite polynomials outputted by the class.} \label{fig:exp}
+\end{figure}
+The class had an inbuilt print function which returns the hierarchy of quantum numbers \texttt{(nx,ny,spin,energy)} according to $E/(\hbar \omega)$. This to further instil confidence that the implementation was correct. The output for the first four energy levels are contained in table \ref{tbl:states}.
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{c}
+\lstinputlisting{../resources/output.txt}
+\end{tabular}
+\caption{Table of the first 4 energy levels auto-generated by the harmonic oscillator class. Each constitute an energy level. Please use \texttt{(nx,ny,spin,energy)} as the legend for each 4-tuple in the list.}\label{tbl:states}
+\end{center}
+\end{table}
+In particular, this means that the unperturbed energies for 6,12,20 and 30 electrons were 10,28,60 and 110 $\hbar \omega$ respectively. \\
 \\
-\texttt{(nx,ny,spin,energy)}:
-\lstinputlisting{../resources/output.txt}
-Find the energy for 6,12,20,30 elektroner
-\texttt{(nx,ny,spin,energy)}:
-\lstinputlisting{../resources/output.txt}
-
-Integrator. Which quantum numbers are conserved? what are the possible total spin values?
-
+After changing to polar coordinates, it became feasible to write analytical expressions for bijections of the type $\alpha \mapsto (m,n)$ from the state number to the set of quantum numbers $m,n$. That way, we could run the desired loops over the state numbers and quickly determine the corresponding quantum numbers. The expressions we found were:
+\[
+n(\alpha) = \frac{1}{2} \left[ \left(\frac{E}{\hbar \omega} \right)(\alpha) - |m(\alpha)| - 1 \right]\]
+and
+\[ \quad m(\alpha) = - \left| \left(\frac{E}{\hbar \omega} \right)(\alpha) - 1 \right| + 2 \floor{ \frac{1}{2}\left[\alpha - 1 - \left( \left(\frac{E}{\hbar \omega} \right)(\alpha) - 1 \right)\left(\frac{E}{\hbar \omega} \right)(\alpha) \right] }.
+\]
+for the function $\alpha \mapsto E/\hbar\omega$ given by
+\[
+\left(\frac{E}{\hbar \omega} \right)(\alpha) = \ceil{\frac{1}{2}\left( 1 + 4\alpha \right)^{1/2} - \frac{1}{2} }
+\]
+Although these constitute a bijection, for our purposes we did not need to find the inverses, and to save time, this was omitted.\\
+\\
+Leading up to the Hartree-Fock equations, we will need a few auxiliary results. Let's first see that the Hartree-Fock basis is manifestly orthonormal.
 \begin{prop}
 The Hartree-Fock basis is orthonormal. \label{thm:hforth}
 \end{prop}
@@ -122,7 +135,7 @@ Moreover, since the matrix elements $C$ are unitary,
 \end{align*}
 which proves that the Hartree-Fock basis is orthonormal
 \end{proof}
-
+We also need to be able to relate the Hartree-Fock states to the harmonic oscillator states. This is is the only way we can relate the simultaneous probability distribution of Hartree-Fock to the simultaneous harmonic oscillator distribution. The result is trivial consequence of the formula for products of determinants. The result is however interesting from a physics point of view since it shows that the simultaneous harmonic oscillator distribution is related to the Hartree-Fock by a constant.
 \begin{prop}
 Let $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ denote the Hartree-Fock and harmonic oscillator slater determintants respectively, then:
 \[
@@ -156,7 +169,7 @@ Let's agree to write $\psi_{p_i}(x_j,y_j) = \psi_{p_i}(\vec{r}_j) = \psi_{  p_ij
 \end{align*}
 which proves the proposition. 
 \end{proof}
-Lets show two corollaries of this proposition. We first show a little lemma
+Lets show two corollaries of this proposition. It would be interesting to learn more about the constant relating the simultaneous Hartree-Fock distribution and simultaneous Harmonic oscillator distribution. We first show a little lemma
 \begin{lemma}
 Suppose $C$ is unitary over $\mathbb{C}$. Then there exist a $\theta \in (-\pi,\pi]$ such that $\det(C) = e^{ i \theta}$. \label{thm:unitary}
 \end{lemma}
@@ -172,12 +185,12 @@ But since we saw that $\det C = r e^{ i \theta}$, we get
 \]
 and the lemma follows.
 \end{proof}
-In particular, the norm of the determinant is 1. To obtain the first corollary is easy now since it is
+In particular, the norm of the determinant is 1. To obtain the first corollary is easy, yet remarkable since a natural consequence, as far as I can tell, is that there is no information contained in the Hartree-Fock slater determinant that is not in the Harmonic oscillator slater determinant:
 \begin{corollary}
 Assume $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ denote the Hartree-Fock and harmonic oscillator slater determintants respectively, then there exist an $\alpha \in \mathbb{R}$ such that.
 \[
 \psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = e^{ i \theta}\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n) 
-\]
+\] \label{cor:relation}
 \end{corollary}
 \begin{proof}
 By proposition \ref{prop:slater} we have that
@@ -186,7 +199,7 @@ By proposition \ref{prop:slater} we have that
 \]
 Now since $C$ is unitary we know by lemma \ref{thm:unitary} that there exist an $\alpha \in \mathbb{R}$ such that $\det C = e^{ i \alpha}$.
 \end{proof}
-The second corollary is a also very easy,
+The second corollary is a also very easy. Since we are free to chose from a variety of norms on the space of multiparticle states depending on the feature of the state we would like to measure. But since the set of norms could potentially be quite wild functions, it is comforting to note that normalization is guaranteed.
 \begin{corollary}
 Assume $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ denote the Hartree-Fock and harmonic oscillator slater determintants respectively. Then $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is normalized if and only if $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is normalized regardless of the choice of norm.
 \end{corollary}
@@ -195,22 +208,21 @@ By the corollary we know that
 \[
 \psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = e^{ i \theta}\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n) 
 \]
-Now suppose that $\|\cdot \|$ is any norm, then $\|a \psi \| = |a| \| \psi \|$ $(/)$ \parencite[124]{lindstrom_mathematical_2016}. Then
+Now suppose that $\|\cdot \|$ is any norm, and $a$ is some number. Then $\|a \psi \| = |a| \| \psi \|$ $(/)$ \parencite[124]{lindstrom_mathematical_2016}. To obtain there result, write
 \begin{align*}
 \|\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) \| = \|e^{ i \theta}\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)\| \stackrel{(/)}{=} |e^{ i \theta}|\|\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)\| = \|\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)\|
 \end{align*}
 And hence $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is normalized if and only if $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is normalized.
 \end{proof}
-
-Vis siste avsnitt 1d Se slide side 19. Skriv opp basisskiftet funksjonal, deriver. Ferdig.
+We are finally ready for the main result. Let's prove the Hartree-Fock equations.
 \begin{theorem}[Hartree-Fock equations]
-Suppose $E = E(C_{  \alpha \beta})$ is the energy of $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$. Then $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = \det (C) \psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $E$ is minimized if $C_{  \alpha \beta}$ satisfy
+Let $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ denote the Hartree-Fock and harmonic oscillator slater determintants respectively. Suppose $E = E(C_{  \alpha \beta})$ is the energy of $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$. Then $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = \det (C) \psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $E$ is stationary only if $C_{  \alpha \beta}$ satisfy
 \begin{equation}
 \sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N  \rho_{ \gamma \delta}V_{  \alpha \gamma \beta \delta}. \label{eq:hfeq}
 \end{equation}
 \end{theorem}
 \begin{proof}
-Note that we already saw that by proposition \ref{prop:slater}, $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = \det (C) \psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is automatically satisfied. Therefore it suffices to show that $E$ is minimized if $C_{  \alpha \beta}$ satisfy \eqref{eq:hfeq}. This is exactly the conclusion of the Lagrange multiplier theorem for a finite set of constrains. By proposition \ref{thm:hforth}, the basis functions $ |  i \rangle$ will automatically be orthogonal. Therefore it suffices to minimize the energy with respect to the normalization constraint $\langle i|i \rangle = 1$. We call the Lagrange multipliers $e_i$ for $1 \leq i \leq \mu$ and write the minimizing condition according to Lagrange multiplier theorem:
+Note that by proposition \ref{prop:slater}, $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = \det (C) \psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is automatic. Therefore it suffices to show that $E$ is minimized if $C_{  \alpha \beta}$ satisfy \eqref{eq:hfeq}. This is exactly the conclusion of the Lagrange multiplier theorem for a finite set of constrains \parencite[405]{lindstrom_flervariabel_2011}. By proposition \ref{thm:hforth}, the basis functions $ |  i \rangle$ will automatically be orthogonal. Therefore it suffices to find a stationary point of the energy with respect to the normalization constraint $\langle i|i \rangle = 1$. Let $e_i$ denote the Lagrange multipliers for all $1 \leq i \leq \mu$ and write the condition of the Lagrange multiplier theorem:
 \begin{align*}
 0 &= \pp ;C_{  i \alpha}; \left[ E(C_{  i \alpha}) - \sum_{i=1}^\mu e_i(\langle i|i \rangle(C_{  i \alpha}) - 1) \right] \\
 &= \pp ;C_{  i \alpha}; \left[ 
@@ -224,9 +236,12 @@ Note that we already saw that by proposition \ref{prop:slater}, $\psi_{  p_1\cdo
 \end{align*}
 Now add $e_i C_{  i \alpha}$ to each side of the equation, and the theorem follows.
 \end{proof}
-
-\begin{tabular}{c | c c c c c c c c}
-$R$ & \multicolumn{8}{c}{$N$}\\
+Using the Hartree-Fock method we were able to compute the perturbed energies for 2, 4, 6, 8, 12, 14, 18 and 20 electrons for $R$ in the range 4 to 13. Please see table \ref{tbl:energies}. In regards to performance, the code integrated the energy of two electrons with $R=3$ in 6 ms, $R=6$ in 15 second and $R=13$ in 12 hours on one 8 thread Xeon-processor. By the use of log-transformed ordinary least squares we were able to estimate the complexity of the method. The conclusion was that if $\alpha \approx 4$, then the complexity of the method followed roughly $O(\alpha^R)$.\\
+\\%
+\begin{table}
+\begin{center}
+\begin{tabular}{c c c c c c c c c}
+$R$ & \multicolumn{8}{c}{$\mu$}\\
   & 2         & 4         & 6         & 8         &12         &14        & 18       & 20\\
   \hline
 4 & 3.1626916 & 10.747470 & 20.766927 & 34.829996 & 70.673854 & 92.85253 & 145.9196 & 177.9632\\
@@ -234,19 +249,26 @@ $R$ & \multicolumn{8}{c}{$N$}\\
 6 & 3.1619219 & 10.744865 & 20.720248 & 34.184146 & 67.296902 & 87.85635 & 134.8867 & 161.3397\\
 7 & 3.1619096 & 10.744678 & 20.720123 & 34.152530 & 66.934710 & 87.33664 & 133.9035 & 159.9586\\
 9 & 3.1619143 & 10.744446 & 20.719239 & 34.152248 & 66.912283 & 87.13293 & 132.8712 & 158.2259\\
-13& -         & -         & -         & -         & -         & -        & -        & -       \\
+12& 3.1619140  & 10.744397&  20.719206 & 34.152220 & 66.911403 & 87.12735 & 132.7761  & 158.0050 \\
+13& 3.1619138  & 10.744397&  20.719251 & 34.152217 & 66.911362 & 87.12719  & 132.7760  & 158.0046 \\
 \end{tabular}
-
-Hvor mange singlepartikkel tilstander trenger vi før hartree fock energien stabiliseres? Kalles Hartree fock limit
-
-Sammenlign hartree fock energi og uforstyrret energi
-
-How much do the single-particle energies change compared to the harmonic
-oscillator energies? 
-
-Are the degeneracies seen in the harmonic oscillator calculations preserved?
+\end{center}
+\caption{Table of the ground state energies $E_0$ for 2, 4, 6, 8, 12, 14, 18 and 20 electrons for a few values of $R$ in units of $\hbar \omega$.} \label{tbl:energies}
+\end{table}%
+We will now proceed to discuss the results in the order they were introduced. We saw that our harmonic oscillator basis class output the correct quantum numbers for Cartesian coordinates. We also saw that it produces the correct spatial part of the state functions for the first 5 energy levels. Together with the integrator we wrote, this should constitute sufficient preparations for project 2, at least according to the project description. \\
+\\
+We obtained a number of results about the Hartree-Fock method. We saw that the Hartree-Fock basis is orthonormal by being a linear combination of Harmonic oscillator related by a unitary matrix. This meant that when we went to prove the Hartree-Fock equations, we could apply Lagrange multiplier theorem and make the energy stationary with orthogonality rather than orthonormality.\\
+\\
+Next, we found that the simultaneous probability distribution induced by the Hartree-Fock slater determinant was related to the Harmonic oscillator slater determinant by a constant. This is interesting, because as far as I can tell, it means that we do not obtain any additional information about the system by considering the Hartree-Fock slater determinant relative to the harmonic oscillator slater determinant. By this I mean that if we could work out the constant relating the two slater determinants, then we the probability that state was in a fixed configuration is equal up to this factor for all configurations. This could lead us to wonder why we would be interested in the Hartree-Fock basis. The reasons could be many, but it requires further work to verify these. For example, it is possible that expansions in Hartree-Fock basis is useful for applications. Hopefully this will be clearer after the completion of project 2. Moreover, we found that the constant relating the two slater determinants is $e^{ i \theta}$ for some $\theta \in \mathbb{R}$. One could probably predict this since if it was not the case, then the wavefunction would not remain normalized for identical supports in $\mathbb{R}^2$.\\
+\\
+Finally we deduced the Hartree-Fock equations from the Hartree-Fock energy. Users should note that the Hartree-Fock equations extremize the energy. It is however not clear that the stationary point is a minimum, maximum or saddle point. Nor global or local. We know however that local maximum or minimum can be determined by the Hessian matrix of the Lagrangian functional \parencite[383]{lindstrom_flervariabel_2011}. This is an interesting prospect for further work. However, we saw that as we increased the truncation limit of the Hartree-Fock series the energy would decrease until it reached the Hartree-Fock limit, and cannot rule out that this is a global minimum for quantum dots. In particular we saw that for $R=13$, the energies had stabilized to five or six digits depending on the number of electrons. We saw that the Hartree-Fock energies were somewhat larger compared to the unperturbed energies, by a factor 2 or 3. Moreover, a few lists of the energies were printed. We found that the degeneracies of the Harmonic oscillator single particle states changed, such that the there were only pairs of states with the same energies, probably those with identical spin.
 
 \section*{\uppercase{Conclusion and perspectives}}
+The highlight of the project was the derivations of the Hartree-Fock equations and computation of the Hartree-Fock energies for a 2, 4, 6, 8, 12, 14, 18 and 20 electrons. In arriving at the Hartree-Fock equation we showed a number of interesting results. We saw that the Hartree-Fock basis is manifestly orthonormal, and that the slater determinant of harmonic oscillator states is related to the slater determinant of the Hartree-Fock basis by a constant with norm 1 according to corollary \ref{cor:relation}. As we saw, the latter came as a surprise and offer prospect for further work. In particular it would be interesting to determine what information is already present in the Harmonic oscillator basis, and what new information is added by the Hartree-Fock basis. Furthermore, it was not clear that the stationary point induced by the Hartree-Fock theorem is a global minimum. We could however verify this by applying the second derivative test to the Lagrange functional.\\
+\\
+Finallt, we also laid the foundations for what is to come in project 2 by building a Gaussian quadrature Hermitian integrator and built a class for the basis functions of the Harmonic oscillator. We found analytical expressions for maps with relate state numbers to the quantum numbers of electrons in quantum dots since they are natural in the implementation of such a class.\\
+\\
+In closing, we were asked to offer constructive criticism regarding project 1. As of today, there are no further comments. It was clear that everyone benefited from project 1.
 
 \section*{\uppercase{Appendix}}
 \begin{theorem}[Gaussian quadrature]

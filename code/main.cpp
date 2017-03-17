@@ -40,12 +40,10 @@ int main(int argc, char *argv[])
 {
     double time = omp_get_wtime();
     map < int , map < int, map < int, map< int, double > > > > nninteraction;
-    int F = atoi(argv[1]); // fermi level
+    int F = 6; // fermi level
     // truncation limit
-    int R = 7; // num shells
-    cout << "F=" << F << endl;
+    int R = 6; // num shells
     int N = R*(R+1); // num of states less than R
-    //cout << R << endl;
     vec singleparticleH = zeros<vec>(N);
     for (int i = 0; i<N; i++) {
         singleparticleH[i] = onebody(n(i+1), m(i+1));
@@ -69,7 +67,7 @@ int main(int argc, char *argv[])
     vec spenergies;
     mat jobs = zeros<vec>(4*(R-1) + 1);
 
-
+    cout << "Computing <pq|c|rs> for " <<-2*(R-1) << " <= mp + mq <= " << 2*(R-1) << " ..."<< endl;
     #pragma omp parallel
     {
         int M;
@@ -90,11 +88,8 @@ int main(int argc, char *argv[])
             if(bit)
                 break;
             for (int alpha = 0; alpha < N; alpha++) {
-                //nninteraction[alpha] = new double**[N];
                 for (int beta = 0; beta < N; beta++ ) {
-                    //nninteraction[alpha][beta] = new double*[N];
                     for (int gamma = 0; gamma < N; gamma++) {
-                        //nninteraction[alpha][beta][gamma] = new double[N];
                         for (int delta = 0; delta < N; delta ++){
                             int ml1 = m(alpha+1);
                             int ml2 = m(beta+1);
@@ -159,7 +154,6 @@ int main(int argc, char *argv[])
         }
 
         newenergies = spenergies;
-        // Brute force computation of difference between previous and new sp HF energies
         difference = 0.0;
         for (int i = 0; i<N; i++) {
             difference += abs(newenergies[i]-oldenergies[i])/N;
@@ -168,7 +162,7 @@ int main(int argc, char *argv[])
         hf_count += 1;
     }
 
-    // get energy
+    // get ground state energy
     double EHF = 0;
     for (int alpha = 0; alpha < F; alpha++)
         EHF += oldenergies[alpha];

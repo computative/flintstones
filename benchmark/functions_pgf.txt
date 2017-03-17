@@ -1,0 +1,5 @@
+From the code directory, running
+
+$ python functions_pgf.py
+
+will produce figure "functions.pgf" in the benchmark directory

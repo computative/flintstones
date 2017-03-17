@@ -108,6 +108,34 @@
   \field{year}{2016}
 \endentry
 
+\entry{lindstrom_flervariabel_2011}{book}{}
+  \name{author}{2}{}{%
+    {{}%
+     {Lindstrøm}{L.}%
+     {Tom}{T.}%
+     {}{}%
+     {}{}}%
+    {{}%
+     {Hveberg}{H.}%
+     {Klara}{K.}%
+     {}{}%
+     {}{}}%
+  }
+  \list{publisher}{1}{%
+    {{Pearson Education Limited}}%
+  }
+  \strng{namehash}{LTHK1}
+  \strng{fullhash}{LTHK1}
+  \field{labelyear}{2011}
+  \field{sortinit}{L}
+  \field{edition}{1}
+  \field{title}{Flervariabel Analyse Med Lineær Algebra}
+  \list{location}{1}{%
+    {{Essex}}%
+  }
+  \field{year}{2011}
+\endentry
+
 \entry{munkres_topology_2000}{book}{}
   \name{author}{1}{}{%
     {{}%
