@@ -36,14 +36,12 @@ bool exists(const std::map<int, Args...>& m, int key, Krgs ...keys)
 }
 
 
-int main(int argc, char *argv[])
+int main(int, char *[])
 {
-    double time = omp_get_wtime();
     map < int , map < int, map < int, map< int, double > > > > nninteraction;
-    int F = atoi(argv[1]); // fermi level
+    int F = 6; // fermi level
     // truncation limit
-    int R = 7; // num shells
-    cout << "F=" << F << endl;
+    int R = 6; // num shells
     int N = R*(R+1); // num of states less than R
     //cout << R << endl;
     vec singleparticleH = zeros<vec>(N);
@@ -67,25 +65,49 @@ int main(int argc, char *argv[])
     vec oldenergies = zeros<vec>(N);
     vec newenergies = zeros<vec>(N);
     vec spenergies;
-    mat jobs = zeros<vec>(4*(R-1) + 1);
+    mat jobs = zeros<mat>(3,4*(R-1) + 1);
+    /*
+    jobs(0,0) = 1;
+    jobs(0,1) = 1;
+    jobs.print();
+    int Ms;
+    int M;
+    cout << all(jobs) << endl;
+    while ( accu(jobs) < 3*(4*(R-1)+1) ) {
+        for (Ms = -2; Ms <= 2; Ms += 2) {
+            for (M = -2*(R-1); M <= 2*(R-1); M++ ) {
+                if (!jobs(Ms/2 + 1,M+2*(R-1)))
+                    goto theEnd;
+            }
+        }
+        theEnd:
+        cout << Ms << " " << M << endl;
+        jobs(Ms/2 + 1,M+2*(R-1)) = 1;
+    }
+    return 0;
+    */
 
-
-    #pragma omp parallel
+    #pragma omp parallel num_threads(8)
     {
+        int Ms;
         int M;
         bool bit = false;
-        while (accu(jobs) < (4*(R-1)+1)) {
+        int id = omp_get_thread_num();
+        int threads = omp_get_num_threads();
+        while (accu(jobs) < 3*(4*(R-1)+1)) {
             #pragma omp critical
             {
-                if (accu(jobs) >= 4*(R-1)+1)
+                if (accu(jobs) >= 3*(4*(R-1)+1))
                     bit = true;
-                for (M = -2*(R-1); M <= 2*(R-1); M++ ) {
-                    if (!jobs(M+2*(R-1)))
-                        goto theEnd;
+                for (Ms = -2; Ms <= 2; Ms += 2) {
+                    for (M = -2*(R-1); M <= 2*(R-1); M++ ) {
+                        if (!jobs(Ms/2 + 1,M+2*(R-1)))
+                            goto theEnd;
+                    }
                 }
                 theEnd:;
-                cout << M << endl;
-                jobs(M+2*(R-1)) = 1;
+                cout << Ms << " " << M << endl;
+                jobs(Ms/2 + 1,M+2*(R-1)) = 1;
             }
             if(bit)
                 break;
@@ -98,22 +120,25 @@ int main(int argc, char *argv[])
                         for (int delta = 0; delta < N; delta ++){
                             int ml1 = m(alpha+1);
                             int ml2 = m(beta+1);
-                            if(M != ml1 + ml2 )
-                                continue;
                             int ml3 = m(gamma+1);
                             int ml4 = m(delta+1);
+                            if(not (M == ml1 + ml2 and Ms == sigma(alpha+1) + sigma(beta+1)) )
+                                continue;
                             if (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1)  and ml1 + ml2 == ml3 + ml4) {
-                                if(exists(nninteraction,beta,alpha,delta,gamma) or exists(nninteraction,alpha,beta,delta,gamma)
-                                   or exists(nninteraction,beta,alpha,gamma,delta) or exists(nninteraction,gamma,delta,alpha,beta)) {
+                                if(exists(nninteraction,beta,alpha,delta,gamma))
                                     continue;
-                                } else {
+                                if(exists(nninteraction,alpha,beta,delta,gamma))
+                                    continue;
+                                if(exists(nninteraction,beta,alpha,gamma,delta))
+                                    continue;
+                                if(exists(nninteraction,gamma,delta,alpha,beta))
+                                    continue;
                                 int n1 = n(alpha+1);
                                 int n2 = n(beta+1);
                                 int n3 = n(gamma+1);
                                 int n4 = n(delta+1);
                                 nninteraction[alpha][beta][gamma][delta] = kronecker(sigma(alpha+1), sigma(gamma+1))*kronecker(sigma(beta+1), sigma(delta+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4)
                                         -kronecker(sigma(alpha+1), sigma(delta+1))*kronecker(sigma(beta+1), sigma(gamma+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
-                                }
                             }
                         }
                     }
@@ -134,15 +159,18 @@ int main(int argc, char *argv[])
                         if (sigma(alpha+1) + sigma(gamma+1) == sigma(beta+1) + sigma(delta+1)  and ml1 + ml2 == ml3 + ml4) {
                             if(exists(nninteraction,gamma,alpha,delta,beta)) {
                                 HFmatrix(alpha,beta) += rho(gamma,delta)*nninteraction[gamma][alpha][delta][beta];
+                                continue;
                             } else if(exists(nninteraction,alpha,gamma,delta,beta)) {
                                 HFmatrix(alpha,beta) += -rho(gamma,delta)*nninteraction[alpha][gamma][delta][beta];
+                                continue;
                             } else if(exists(nninteraction,gamma,alpha,beta,delta)) {
                                 HFmatrix(alpha,beta) += -rho(gamma,delta)*nninteraction[gamma][alpha][beta][delta];
+                                continue;
                             } else if(exists(nninteraction,beta,delta,alpha,gamma)) {
                                 HFmatrix(alpha,beta) += rho(gamma,delta)*nninteraction[beta][delta][alpha][gamma];
-                            } else {
-                                HFmatrix(alpha,beta) += rho(gamma,delta)*nninteraction[alpha][gamma][beta][delta];
+                                continue;
                             }
+                            HFmatrix(alpha,beta) += rho(gamma,delta)*nninteraction[alpha][gamma][beta][delta];
                         }
                     }
                 }
@@ -172,7 +200,6 @@ int main(int argc, char *argv[])
     double EHF = 0;
     for (int alpha = 0; alpha < F; alpha++)
         EHF += oldenergies[alpha];
-
     for (int alpha = 0; alpha < N; alpha++) {
         for (int beta = 0; beta < N; beta++ ) {
             for (int gamma = 0; gamma < N; gamma++) {
@@ -181,23 +208,26 @@ int main(int argc, char *argv[])
                     int ml2 = m(beta+1);
                     int ml3 = m(gamma+1);
                     int ml4 = m(delta+1);
-                    if ( (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1) ) and (ml1 + ml2 == ml3 + ml4) )
+                    if (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1)  and ml1 + ml2 == ml3 + ml4)
                         if(exists(nninteraction,beta,alpha,delta,gamma)) {
                             EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteraction[beta][alpha][delta][gamma];
+                            continue;
                         } else if(exists(nninteraction,alpha,beta,delta,gamma)) {
                             EHF -= -0.5*rho(alpha,gamma)*rho(beta,delta)*nninteraction[alpha][beta][delta][gamma];
+                            continue;
                         } else if(exists(nninteraction,beta,alpha,gamma,delta)) {
                             EHF -= -0.5*rho(alpha,gamma)*rho(beta,delta)*nninteraction[beta][alpha][gamma][delta];
+                            continue;
                         } else if(exists(nninteraction,gamma,delta,alpha,beta)) {
                             EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteraction[gamma][delta][alpha][beta];
-                        } else {
-                            EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteraction[alpha][beta][gamma][delta];
+                            continue;
                         }
+                        EHF -= 0.5*rho(alpha,gamma)*rho(beta,delta)*nninteraction[alpha][beta][gamma][delta];
                 }
             }
         }
     }
-    cout <<  setprecision(9) << "E="<< EHF << " runtime=" << omp_get_wtime()-time << endl;
+    cout <<  setprecision(9) << EHF << endl;
     return 0;
 }
 

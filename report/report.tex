@@ -16,10 +16,9 @@
   xleftmargin=.2\textwidth, xrightmargin=.2\textwidth
 }
 
-\section*{\uppercase{Introduction}}
 In this project we completed a variety of tasks to prepare ourselves for the final term project. We set up basis for compact subsets of $\mathbb{R}^2$ using quantum harmonic oscillator state functions. We did this by making a $\alpha \mapsto (n_x,n_y)$ bijection from the set of natural numbers to the two-tuples of harmonic oscillator principal quantum numbers on $\mathbb{R}^2$. In the class we included method to evaluate any given state basis function at the point $x \in \mathbb{R}^2$ and a method to return single Hermite polynomials. The latter was useful when we went ahead to build a Gaussian-quadrature Hermite integrator. The intent was that we would use this integrator to compute Coulomb interaction matrix elements,  $\langle \alpha \beta | V | \gamma\delta \rangle$, for the quantum dot variety of the Hartree-Fock method. However, halfway through the project period, the course administration decided to supply a function which calculated the matrix elements in polar coordinates. The Hermite integrator was therefore never implemented further than for the integration of polynomials. Finally we wrote a program to solve the induced Hartree-Fock equations. Suppose $\mu$ is the Fermi level of some quantum dot. We wanted to find a $N \times N$-matrix $C$ and an $N$-tuple $(\varepsilon_1, \cdots, \varepsilon_N)$ such that
 \begin{equation}
-\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = \varepsilon_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  j=1}^\mu \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N C_{  j \gamma}^* C_{  j \delta} \Big( \langle \alpha \gamma | V | \beta \delta \rangle - \langle \alpha \gamma | V | \delta \beta \rangle \Big).
+\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  j=1}^\mu \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N C_{  j \gamma}^* C_{  j \delta} \Big( \langle \alpha \gamma | V | \beta \delta \rangle - \langle \alpha \gamma | V | \delta \beta \rangle \Big).
 \label{eq:HF}
 \end{equation}
 We will call these equations the Hartree-Fock equations.
@@ -83,9 +82,9 @@ Moreover since $\psi_n$ can be made real
 \[
 V_{  \alpha \beta \gamma \delta} = V_{  \gamma \delta\alpha \beta}.
 \]
-In addition, we can show that $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total spin of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle $. Similarly $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total angular momentum of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle$. For some choices of $\mu$ and $N$, this reduced the number of stored matrix by a few orders of magnitudes, since we could compute only a few elements, and let the algorithm use the symmetries still determine the correct matrix elements. In this notation, the Hartree-Fock equations become:
+In addition, we can show that $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total spin of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle $. Similarly $V_{  \alpha \beta \gamma \delta} = 0$ whenever the total angular momentum of $ |  \alpha \beta \rangle $ is different from the total spin of $ |  \gamma  \delta \rangle$. For some choices of $\mu$ and $N$, this reduced the number of stored matrix by a few orders of magnitudes, since we could compute only a few elements, and let the algorithm use the symmetries still determine the correct matrix elements. Define for brevity $\rho_{ \gamma \delta} = \sum_{j=1}^\mu C_{  j \gamma}^* C_{  j \delta}$In this notation, the Hartree-Fock equations become:
 \[
-\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = \varepsilon_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N \sum_{  j=1}^\mu \left( C_{  j \gamma}^* C_{  j \delta} \right)V_{  \alpha \gamma \beta \delta}
+\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N  \rho_{ \gamma \delta}V_{  \alpha \gamma \beta \delta}
 \]
 As we explained, the equations were solved iteritatively. We let the value of $C_{  \alpha \beta} = \text{diag}(1,1,\cdots 1,0,0,\cdots,0)$, where the number of one-elements were exactly $\mu$. Using this candidate for $C_{  \alpha \beta}$, $F_{  \alpha \beta}$ was determined for each iteration. Thereafter, the matrix $F$ was diagonalized $F = CDC^{  -1}$, where $D = \text{diag} ( \varepsilon_1, \cdots, \varepsilon_N)$. Such a decomposition exists since $F$ has exactly $N$ eigenvalues and $\varepsilon_j$ are the single state energies since the columns of $C$ are eigenvectors of $F$ by The Diagonalization theorem of linear algebra \parencite[282]{lay_linear_2012}. Clearly then, the algorithm is implemented by a 5-dimensional loop. One for each index $\alpha, \beta, \gamma, \delta$, and one loop until the desired precision is obtained. For brevity, the please see the github-page for the implementation: \texttt{http://github.com/kingoslo/flintstones}.\\
 \\
@@ -103,7 +102,7 @@ Find the energy for 6,12,20,30 elektroner
 Integrator. Which quantum numbers are conserved? what are the possible total spin values?
 
 \begin{prop}
-The Hartree-Fock basis is orthonormal.
+The Hartree-Fock basis is orthonormal. \label{thm:hforth}
 \end{prop}
 \begin{proof}
 It is easy to see that the two dimensional Harmonic oscillator functions are orthonormal. To see this, just write up $\langle \psi_{  \alpha} | \psi_{  \beta} \rangle$ and factor each state function into a product of 1 dimensional state functions. Therefore
@@ -204,9 +203,27 @@ And hence $\psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is norma
 \end{proof}
 
 Vis siste avsnitt 1d Se slide side 19. Skriv opp basisskiftet funksjonal, deriver. Ferdig.
-
-Forklar hva de forskjellige termene er
-
+\begin{theorem}[Hartree-Fock equations]
+Suppose $E = E(C_{  \alpha \beta})$ is the energy of $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n)$. Then $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = \det (C) \psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ and $E$ is minimized if $C_{  \alpha \beta}$ satisfy
+\begin{equation}
+\sum_{  \beta = 1}^N F_{  \alpha \beta} C_{  \beta \gamma} = e_\gamma C_{  \gamma \alpha} \qquad \text{for} \qquad F_{  \alpha \beta} = \varepsilon_{  \alpha} \delta_{  \alpha \beta} + \sum_{  \gamma = 1}^N \sum_{  \delta = 1}^N  \rho_{ \gamma \delta}V_{  \alpha \gamma \beta \delta}. \label{eq:hfeq}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Note that we already saw that by proposition \ref{prop:slater}, $\psi_{  p_1\cdots p_n}(\vec{r}_1,\cdots, \vec{r}_n) = \det (C) \psi_{  \beta_1\cdots \beta_n}(\vec{r}_1,\cdots, \vec{r}_n)$ is automatically satisfied. Therefore it suffices to show that $E$ is minimized if $C_{  \alpha \beta}$ satisfy \eqref{eq:hfeq}. This is exactly the conclusion of the Lagrange multiplier theorem for a finite set of constrains. By proposition \ref{thm:hforth}, the basis functions $ |  i \rangle$ will automatically be orthogonal. Therefore it suffices to minimize the energy with respect to the normalization constraint $\langle i|i \rangle = 1$. We call the Lagrange multipliers $e_i$ for $1 \leq i \leq \mu$ and write the minimizing condition according to Lagrange multiplier theorem:
+\begin{align*}
+0 &= \pp ;C_{  i \alpha}; \left[ E(C_{  i \alpha}) - \sum_{i=1}^\mu e_i(\langle i|i \rangle(C_{  i \alpha}) - 1) \right] \\
+&= \pp ;C_{  i \alpha}; \left[ 
+\sum_{i=1}^\mu \langle i | h_0 | i \rangle + \frac{1}{2} \sum_{i=1}^\mu \sum_{j=1}^\mu \left[ \langle ij|v|ij \rangle - \langle ij|v|ji \rangle \right]
+- \sum_{i=1}^\mu e_i\langle i|i \rangle(C_{  i \alpha} )
+\right] + \undercbrace{\pp ;C_{  i \alpha}; \sum_{i=1}^\mu e_i}_{  =0}\\
+&=  
+\sum_{i=1}^\mu \sum_{\alpha=1}^N \sum_{\beta=1}^N\pp ;C_{  i \alpha}; C^*_{  i\alpha} C_{  i \beta} \langle \alpha | h_0 | \beta \rangle - \sum_{i=1}^\mu\sum_{\alpha=1}^N \pp ;C_{  i \alpha};e_iC^*_{  i\alpha} C_{  i \alpha}\\
+&+ \frac{1}{2} \sum_{i=1}^\mu \sum_{j=1}^\mu \sum_{\alpha=1}^N\sum_{\beta=1}^N\sum_{\gamma=1}^N\sum_{\delta=1}^N\pp ;C_{  i \alpha}; C^*_{  i\alpha} C_{  j \beta}^*C_{  i\gamma} C_{  j \delta} \undercbrace{\left[ \langle \alpha \beta|v|\gamma \delta \rangle - \langle \alpha \beta|v|\delta \gamma \rangle \right]}_{=V_{  \alpha \beta \gamma \delta}} \\
+&= \sum_{\beta=1}^N \left[ \varepsilon \delta_{  \alpha \beta} + \sum_{\gamma = 1}^N \sum_{\delta=1}^N \rho_{  \gamma \delta} V_{  \alpha \gamma \beta \delta} \right] C_{  i \beta} - e_i C_{  i \alpha}
+\end{align*}
+Now add $e_i C_{  i \alpha}$ to each side of the equation, and the theorem follows.
+\end{proof}
 
 \begin{tabular}{c | c c c c c c c c}
 $R$ & \multicolumn{8}{c}{$N$}\\
