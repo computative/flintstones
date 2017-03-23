@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     map < int , map < int, map < int, map< int, double > > > > nninteraction;
     int F = 6; // fermi level
     // truncation limit
-    int R = 6; // num shells
+    int R = 7; // num shells
     int N = R*(R+1); // num of states less than R
     vec singleparticleH = zeros<vec>(N);
     for (int i = 0; i<N; i++) {
@@ -88,23 +88,23 @@ int main(int argc, char *argv[])
             if(bit)
                 break;
             for (int alpha = 0; alpha < N; alpha++) {
+                int ml1 = m(alpha+1);
+                int n1 = n(alpha+1);
                 for (int beta = 0; beta < N; beta++ ) {
+                    int ml2 = m(beta+1);
+                    int n2 = n(beta+1);
                     for (int gamma = 0; gamma < N; gamma++) {
+                        int ml3 = m(gamma+1);
+                        int n3 = n(gamma+1);
                         for (int delta = 0; delta < N; delta ++){
-                            int ml1 = m(alpha+1);
-                            int ml2 = m(beta+1);
                             if(M != ml1 + ml2 )
                                 continue;
-                            int ml3 = m(gamma+1);
                             int ml4 = m(delta+1);
                             if (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1)  and ml1 + ml2 == ml3 + ml4) {
                                 if(exists(nninteraction,beta,alpha,delta,gamma) or exists(nninteraction,alpha,beta,delta,gamma)
                                    or exists(nninteraction,beta,alpha,gamma,delta) or exists(nninteraction,gamma,delta,alpha,beta)) {
                                     continue;
                                 } else {
-                                int n1 = n(alpha+1);
-                                int n2 = n(beta+1);
-                                int n3 = n(gamma+1);
                                 int n4 = n(delta+1);
                                 nninteraction[alpha][beta][gamma][delta] = kronecker(sigma(alpha+1), sigma(gamma+1))*kronecker(sigma(beta+1), sigma(delta+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n3, ml3, n4, ml4)
                                         -kronecker(sigma(alpha+1), sigma(delta+1))*kronecker(sigma(beta+1), sigma(gamma+1))*Coulomb_HO(hw, n1, ml1, n2, ml2, n4, ml4, n3, ml3);
@@ -119,12 +119,12 @@ int main(int argc, char *argv[])
     while (hf_count < maxHFiter and difference > epsilon) {
         mat HFmatrix = zeros<mat>(N,N);
         for (int alpha = 0; alpha < N; alpha++) {
+            int ml1 = m(alpha+1);
             for (int beta = 0; beta < N; beta++ ) {
+                int ml3 = m(beta+1);
                 for (int gamma = 0; gamma < N; gamma++) {
+                    int ml2 = m(gamma+1);
                     for (int delta = 0; delta < N; delta ++){
-                        int ml1 = m(alpha+1);
-                        int ml2 = m(gamma+1);
-                        int ml3 = m(beta+1);
                         int ml4 = m(delta+1);
                         if (sigma(alpha+1) + sigma(gamma+1) == sigma(beta+1) + sigma(delta+1)  and ml1 + ml2 == ml3 + ml4) {
                             if(exists(nninteraction,gamma,alpha,delta,beta)) {
@@ -168,12 +168,12 @@ int main(int argc, char *argv[])
         EHF += oldenergies[alpha];
 
     for (int alpha = 0; alpha < N; alpha++) {
+        int ml1 = m(alpha+1);
         for (int beta = 0; beta < N; beta++ ) {
+            int ml2 = m(beta+1);
             for (int gamma = 0; gamma < N; gamma++) {
+                int ml3 = m(gamma+1);
                 for (int delta = 0; delta < N; delta ++){
-                    int ml1 = m(alpha+1);
-                    int ml2 = m(beta+1);
-                    int ml3 = m(gamma+1);
                     int ml4 = m(delta+1);
                     if ( (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1) ) and (ml1 + ml2 == ml3 + ml4) )
                         if(exists(nninteraction,beta,alpha,delta,gamma)) {
@@ -242,7 +242,8 @@ double onebody(int n, int m){
 }
 
 int m(int a) {
-    return - abs(E(a)-1) + 2*floor((a-1 - E(a)*(E(a)-1))/2.);
+    double e = E(a);
+    return - abs(e-1) + 2*floor((a-1 - e*(e-1))/2.);
 }
 
 int n(int a) {
