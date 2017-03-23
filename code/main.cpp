@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     map < int , map < int, map < int, map< int, double > > > > nninteraction;
     int F = 6; // fermi level
     // truncation limit
-    int R = 7; // num shells
+    int R = 6; // num shells
     int N = R*(R+1); // num of states less than R
     vec singleparticleH = zeros<vec>(N);
     for (int i = 0; i<N; i++) {
@@ -92,13 +92,13 @@ int main(int argc, char *argv[])
                 int n1 = n(alpha+1);
                 for (int beta = 0; beta < N; beta++ ) {
                     int ml2 = m(beta+1);
+                    if(M != ml1 + ml2 )
+                        continue;
                     int n2 = n(beta+1);
                     for (int gamma = 0; gamma < N; gamma++) {
                         int ml3 = m(gamma+1);
                         int n3 = n(gamma+1);
                         for (int delta = 0; delta < N; delta ++){
-                            if(M != ml1 + ml2 )
-                                continue;
                             int ml4 = m(delta+1);
                             if (sigma(alpha+1) + sigma(beta+1) == sigma(gamma+1) + sigma(delta+1)  and ml1 + ml2 == ml3 + ml4) {
                                 if(exists(nninteraction,beta,alpha,delta,gamma) or exists(nninteraction,alpha,beta,delta,gamma)
